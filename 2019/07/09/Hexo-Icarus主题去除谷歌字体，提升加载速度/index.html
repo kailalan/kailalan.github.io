@@ -2,24 +2,24 @@
 <html>
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
-<title>git常用命令和故障 - Kail的博客</title>
+<title>Hexo-Icarus主题去除谷歌字体，提升加载速度 - Kail的博客</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
-    <meta name="description" content="问题1、git 出现 SSL certificate problem: unable to get local issuer certificategit config --global http.sslVerify false">
-<meta name="keywords" content="git,故障">
+    <meta name="description" content="背景在使用github pages服务搭建Hexo博客的时候使用icarus作为主题，使用hexo generate和hexo deploy命令生成并部署后，在访问主页的时候发现加载速度特别慢">
+<meta name="keywords" content="hexo,icarus">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git常用命令和故障">
-<meta property="og:url" content="http://kailalan.github.com/2019/07/09/git常用命令和故障/index.html">
+<meta property="og:title" content="Hexo-Icarus主题去除谷歌字体，提升加载速度">
+<meta property="og:url" content="http://kailalan.github.com/2019/07/09/Hexo-Icarus主题去除谷歌字体，提升加载速度/index.html">
 <meta property="og:site_name" content="Kail的博客">
-<meta property="og:description" content="问题1、git 出现 SSL certificate problem: unable to get local issuer certificategit config --global http.sslVerify false">
+<meta property="og:description" content="背景在使用github pages服务搭建Hexo博客的时候使用icarus作为主题，使用hexo generate和hexo deploy命令生成并部署后，在访问主页的时候发现加载速度特别慢">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
-<meta property="og:updated_time" content="2019-07-09T07:40:11.364Z">
+<meta property="og:updated_time" content="2019-07-09T10:09:16.197Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="git常用命令和故障">
-<meta name="twitter:description" content="问题1、git 出现 SSL certificate problem: unable to get local issuer certificategit config --global http.sslVerify false">
+<meta name="twitter:title" content="Hexo-Icarus主题去除谷歌字体，提升加载速度">
+<meta name="twitter:description" content="背景在使用github pages服务搭建Hexo博客的时候使用icarus作为主题，使用hexo generate和hexo deploy命令生成并部署后，在访问主页的时候发现加载速度特别慢">
 <meta name="twitter:image" content="http://kailalan.github.com/images/og_image.png">
 
 
@@ -93,7 +93,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.svg" alt="git常用命令和故障" height="28">
+                <img src="/images/logo.svg" alt="Hexo-Icarus主题去除谷歌字体，提升加载速度" height="28">
             
             </a>
         </div>
@@ -144,17 +144,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-07-09T07:33:57.000Z">2019-07-09</time>
+                <time class="level-item has-text-grey" datetime="2019-07-09T09:16:33.000Z">2019-07-09</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/GIT学习/">GIT学习</a>
+                <a class="has-link-grey -link" href="/categories/Hexo/">Hexo</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    a few seconds read (About 21 words)
+                    2 minutes read (About 363 words)
                 </span>
                 
                 
@@ -163,18 +163,23 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                git常用命令和故障
+                Hexo-Icarus主题去除谷歌字体，提升加载速度
             
         </h1>
         <div class="content">
-            <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><h2 id="1、git-出现-SSL-certificate-problem-unable-to-get-local-issuer-certificate"><a href="#1、git-出现-SSL-certificate-problem-unable-to-get-local-issuer-certificate" class="headerlink" title="1、git 出现 SSL certificate problem: unable to get local issuer certificate"></a>1、git 出现 SSL certificate problem: unable to get local issuer certificate</h2><pre><code>git config --global http.sslVerify false</code></pre>
+            <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在使用<code>github pages</code>服务搭建<code>Hexo</code>博客的时候使用<code>icarus</code>作为主题，使用hexo generate和hexo deploy命令生成并部署后，在访问主页的时候发现加载速度特别慢<a id="more"></a>，通过浏览器调试模式发现了加载速度慢的原因<br><img src="/2019/07/09/Hexo-Icarus主题去除谷歌字体，提升加载速度/201907091729.png" alt="调试控制台截图"><br><img src="/2019/07/09/Hexo-Icarus主题去除谷歌字体，提升加载速度/201907091730.png" alt="网络请求截图"><br><img src="/2019/07/09/Hexo-Icarus主题去除谷歌字体，提升加载速度/201907091731.png" alt="请求结果截图"><br>从调试截图中可以看到，请求中有一个谷歌字体的失败请求，因为谷歌被墙的原因，国内无法加载这个字体，所以导致整个页面的请求都在等待这个请求直至请求失败，页面最终加载成功</p>
+<p>通过关键字翻阅icarus主题的文件，在<code>themes\icarus\layout\common\head.ejs</code>文件查找到了字体引用的代码</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta charset=&quot;utf-8&quot;&gt;</span><br><span class="line">&lt;title&gt;&lt;%= page_title() %&gt;&lt;/title&gt;</span><br><span class="line">&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1, maximum-scale=1&quot; /&gt;</span><br><span class="line">&lt;%- meta() %&gt;</span><br><span class="line"></span><br><span class="line">&lt;% if (has_config(&apos;open_graph&apos;)) &#123; %&gt;</span><br><span class="line">    &lt;%- open_graph(&#123;</span><br><span class="line">        twitter_id: get_config(&apos;open_graph.twitter_id&apos;),</span><br><span class="line">        twitter_site: get_config(&apos;open_graph.twitter_site&apos;),</span><br><span class="line">        google_plus: get_config(&apos;open_graph.google_plus&apos;),</span><br><span class="line">        fb_admins: get_config(&apos;open_graph.fb_admins&apos;),</span><br><span class="line">        fb_app_id: get_config(&apos;open_graph.fb_app_id&apos;),</span><br><span class="line">        image: get_og_image(page)</span><br><span class="line">    &#125;) %&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;% if (has_config(&apos;canonical_url&apos;)) &#123; %&gt;</span><br><span class="line">&lt;link rel=&quot;canonical&quot; href=&quot;&lt;%- get_config(&apos;canonical_url&apos;) %&gt;&quot; /&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;% if (has_config(&apos;rss&apos;)) &#123; %&gt;</span><br><span class="line">&lt;link rel=&quot;alternative&quot; href=&quot;&lt;%- get_config(&apos;rss&apos;) %&gt;&quot; title=&quot;&lt;%= get_config(&apos;title&apos;) %&gt;&quot; type=&quot;application/atom+xml&quot;&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;% if (has_config(&apos;favicon&apos;)) &#123; %&gt;</span><br><span class="line">&lt;link rel=&quot;icon&quot; href=&quot;&lt;%- url_for(get_config(&apos;favicon&apos;)) %&gt;&quot;&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;%- _css(cdn(&apos;bulma&apos;, &apos;0.7.2&apos;, &apos;css/bulma.css&apos;)) %&gt;</span><br><span class="line">&lt;%- _css(iconcdn()) %&gt;</span><br><span class="line">&lt;%- _css(fontcdn(&apos;Ubuntu:400,600|Source+Code+Pro&apos;)) %&gt;</span><br><span class="line">&lt;%- _css(cdn(&apos;highlight.js&apos;, &apos;9.12.0&apos;, &apos;styles/&apos; + get_config(&apos;article.highlight&apos;) + &apos;.css&apos;)) %&gt;</span><br><span class="line"></span><br><span class="line">&lt;% if (has_config(&apos;plugins&apos;)) &#123; %&gt;</span><br><span class="line">    &lt;% for (let plugin in get_config(&apos;plugins&apos;)) &#123; %&gt;</span><br><span class="line">    &lt;%- partial(&apos;plugin/&apos; + plugin, &#123; head: true, plugin: get_config(&apos;plugins&apos;)[plugin] &#125;) %&gt;</span><br><span class="line">    &lt;% &#125; %&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;%- _css(&apos;css/style&apos;) %&gt;</span><br></pre></td></tr></table></figure>
+
+<p>删除第31行代码，重新生成部署</p>
+<pre><code>&lt;%- _css(fontcdn(&apos;Ubuntu:400,600|Source+Code+Pro&apos;)) %&gt;</code></pre>
         </div>
         
         <div class="level is-size-7 is-uppercase">
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/git/">git</a>, <a class="has-link-grey -link" href="/tags/故障/">故障</a>
+                    <a class="has-link-grey -link" href="/tags/hexo/">hexo</a>, <a class="has-link-grey -link" href="/tags/icarus/">icarus</a>
                 </div>
             </div>
         </div>
@@ -191,17 +196,10 @@
 <div class="card card-transparent">
     <div class="level post-navigation is-flex-wrap is-mobile">
         
-        <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/07/09/Hexo-Icarus主题去除谷歌字体，提升加载速度/">
-                <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">Hexo-Icarus主题去除谷歌字体，提升加载速度</span>
-            </a>
-        </div>
-        
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2019/07/09/spring-boot运行jar命令提示没有主清单属性/">
-                <span class="level-item">spring-boot运行jar命令提示没有主清单属性</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/07/09/git常用命令和故障/">
+                <span class="level-item">git常用命令和故障</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -706,7 +704,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.svg" alt="git常用命令和故障" height="28">
+                    <img src="/images/logo.svg" alt="Hexo-Icarus主题去除谷歌字体，提升加载速度" height="28">
                 
                 </a>
                 <p class="is-size-7">
