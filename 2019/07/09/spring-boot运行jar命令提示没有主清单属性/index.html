@@ -15,7 +15,7 @@
 <meta property="og:description" content="背景在开发项目的过程中，spring-boot项目打包成可执行jar，一直能正常运行，后来需要引入同事封装的一个权限框架，依赖了两个jar包，引入之后再使用mvn package将项目打包成可执行jar，运行时就会显示没有主清单属性">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
-<meta property="og:updated_time" content="2019-07-08T18:30:56.065Z">
+<meta property="og:updated_time" content="2019-07-09T01:59:36.282Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring-boot运行jar命令提示没有主清单属性">
 <meta name="twitter:description" content="背景在开发项目的过程中，spring-boot项目打包成可执行jar，一直能正常运行，后来需要引入同事封装的一个权限框架，依赖了两个jar包，引入之后再使用mvn package将项目打包成可执行jar，运行时就会显示没有主清单属性">
@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 609 words)
+                    5 minutes read (About 691 words)
                 </span>
                 
                 
@@ -170,18 +170,19 @@
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: 1.0</span><br><span class="line">Built-By: KailA</span><br><span class="line">Created-By: Apache Maven 3.6.0</span><br><span class="line">Build-Jdk: 1.8.0_141</span><br></pre></td></tr></table></figure>
 
 <p>经过网上查阅资料不断排查，发现项目内除了springboot主工程main方法的类使用了@SpringBootApplication注解，新依赖的jar包里也有一个带有main方法的类并且都使用了@SpringBootApplication注解</p>
-<h1 id="情景再现"><a href="#情景再现" class="headerlink" title="情景再现"></a>情景再现</h1><p>如果工程内有两个带有main方法的类并且都使用@SpringBootApplication注解（@SpringBootApplication注解），同时pom.xml的maven打包插件配置如下：</p>
+<h1 id="情景再现"><a href="#情景再现" class="headerlink" title="情景再现"></a>情景再现</h1><p>如果工程内有两个带有main方法的类并且都使用@SpringBootApplication注解（或者另一种情形：有两个main方法并且所在类都没有使用@SpringBootApplication注解，有多个main方法，但只有一个使用@SpringBootApplication注解并不会引发此问题），同时pom.xml的maven打包插件配置如下：</p>
 <figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.5.3.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">executions</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">execution</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">goals</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">goal</span>&gt;</span>repackage<span class="hljs-tag">&lt;/<span class="hljs-name">goal</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;/<span class="hljs-name">goals</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">execution</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">executions</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>查看Springboot<a href="https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#build-tool-plugins-maven-packaging" title="springboot文档-8.1.2.Packaging Executable Jar and War Files" target="_blank" rel="noopener">官方文档</a>的<code>8.1.2. Packaging Executable Jar and War Files</code>关于maven打包插件的说明</p>
 <p><img src="/2019/07/09/spring-boot运行jar命令提示没有主清单属性/201907090219.png" alt="官方原文"></p>
 <p>当工程没有指定<code>&lt;mainClass</code>&gt;或者继承了spring-boot-starter-parent并且<start-class>属性未配置时，插件会自动寻找签名是public static void main(String[] args)的方法，当存在两个main方法时，插件会无法识别哪一个main方法才是主函数</start-class></p>
-<p>通用解决方法：<code>&lt;configuration&gt;</code>下配置mainClass，指定程序入口。</p>
+<p>1、通用解决方法：<code>&lt;configuration&gt;</code>下配置mainClass，指定程序入口。</p>
 <figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.5.3.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span></span><br><span class="line">            <span class="hljs-comment">&lt;!-- 解决本地jar不能打入部署包的问题 --&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">includeSystemScope</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">includeSystemScope</span>&gt;</span></span><br><span class="line">            <span class="hljs-comment">&lt;!-- 指定程序入口 --&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">mainClass</span>&gt;</span>app.Application<span class="hljs-tag">&lt;/<span class="hljs-name">mainClass</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">executions</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">execution</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;<span class="hljs-name">goals</span>&gt;</span></span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">goal</span>&gt;</span>repackage<span class="hljs-tag">&lt;/<span class="hljs-name">goal</span>&gt;</span></span><br><span class="line">            <span class="hljs-tag">&lt;/<span class="hljs-name">goals</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">execution</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">executions</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>配置打包后的MANIFEST.MF文件</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: 1.0</span><br><span class="line">Built-By: KailA</span><br><span class="line">Start-Class: app.Application</span><br><span class="line">Spring-Boot-Classes: BOOT-INF/classes/</span><br><span class="line">Spring-Boot-Lib: BOOT-INF/lib/</span><br><span class="line">Spring-Boot-Version: 1.5.8.RELEASE</span><br><span class="line">Created-By: Apache Maven 3.6.0</span><br><span class="line">Build-Jdk: 1.8.0_141</span><br><span class="line">Main-Class: org.springframework.boot.loader.JarLauncher</span><br></pre></td></tr></table></figure>
 
+<p> 2、解决方法二，此方法有一定的限制，只有在你的pom.xml继承自<code>spring-boot-starter-parent</code></p>
 <p>参考文章：</p>
 <p><a href="https://www.cnblogs.com/thinking-better/p/7827368.html" title="Spring Boot Maven Plugin打包异常及三种解决方法：Unable to find main class" target="_blank" rel="noopener">Spring Boot Maven Plugin打包异常及三种解决方法：Unable to find main class</a></p>
 <p><a href="https://jingyan.baidu.com/article/215817f74877021edb142378.html?qq-pf-to=pcqq.c2c" title="maven引入本地jar不能打入部署包的问题解决" target="_blank" rel="noopener">maven引入本地jar不能打入部署包的问题解决</a></p>
@@ -238,7 +239,7 @@
             <div class="level-item has-text-centered is-marginless">
                 <div>
                     <p class="heading">
-                        Post
+                        Entrada
                     </p>
                     <p class="title has-text-weight-normal">
                         1
@@ -248,7 +249,7 @@
             <div class="level-item has-text-centered is-marginless">
                 <div>
                     <p class="heading">
-                        Categories
+                        Categorias
                     </p>
                     <p class="title has-text-weight-normal">
                         0
@@ -258,7 +259,7 @@
             <div class="level-item has-text-centered is-marginless">
                 <div>
                     <p class="heading">
-                        Tags
+                        Etiquetas
                     </p>
                     <p class="title has-text-weight-normal">
                         0
@@ -268,7 +269,7 @@
         </nav>
         <div class="level">
             <a class="level-item button is-link is-rounded" href="https://github.com/kailalan" target="_blank">
-                Follow</a>
+                SEGUIR</a>
         </div>
         
         
@@ -355,7 +356,7 @@
     <div class="card-content">
         <div class="menu">
             <h3 class="menu-label">
-                Categories
+                Categorias
             </h3>
             <ul class="menu-list">
             
@@ -373,7 +374,7 @@
 <div class="card widget">
     <div class="card-content">
         <h3 class="menu-label">
-            Recent
+            Recientes
         </h3>
         
         <article class="media">
@@ -403,7 +404,7 @@
     <div class="card-content">
         <div class="menu">
         <h3 class="menu-label">
-            Archives
+            Archivos
         </h3>
         <ul class="menu-list">
         
@@ -427,7 +428,7 @@
     <div class="card-content">
         <div class="menu">
             <h3 class="menu-label">
-                Tags
+                Etiquetas
             </h3>
             <div class="field is-grouped is-grouped-multiline">
                 
@@ -451,7 +452,7 @@
 <div class="card widget">
     <div class="card-content">
         <h3 class="menu-label">
-            Recent
+            Recientes
         </h3>
         
         <article class="media">
@@ -481,7 +482,7 @@
     <div class="card-content">
         <div class="menu">
         <h3 class="menu-label">
-            Archives
+            Archivos
         </h3>
         <ul class="menu-list">
         
@@ -505,7 +506,7 @@
     <div class="card-content">
         <div class="menu">
             <h3 class="menu-label">
-                Tags
+                Etiquetas
             </h3>
             <div class="field is-grouped is-grouped-multiline">
                 
@@ -706,10 +707,10 @@ document.addEventListener('DOMContentLoaded', function () {
     (function (window) {
         var INSIGHT_CONFIG = {
             TRANSLATION: {
-                POSTS: 'Posts',
+                POSTS: 'Entradas',
                 PAGES: 'Pages',
-                CATEGORIES: 'Categories',
-                TAGS: 'Tags',
+                CATEGORIES: 'Categorias',
+                TAGS: 'Etiquetas',
                 UNTITLED: '(Untitled)',
             },
             CONTENT_URL: '/content.json',
