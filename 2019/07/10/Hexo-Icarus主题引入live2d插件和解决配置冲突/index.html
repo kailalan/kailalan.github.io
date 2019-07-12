@@ -8,7 +8,7 @@
 
 
     <meta name="description" content="前言搭建好自己Hexo博客，大家都会绞尽脑汁去装修自己的博客页面，作为二次元的小萌希望能在自己的博客上放上自己喜欢的动漫人物或者看板小挂件。在网上看了很多大牛分享的Hexo博客搭建教程中都有live2d插件身影出现。 live2d是一种应用于电子游戏的绘图渲染技术，通过一系列的连续图像和人物建模来生成一种类似三维模型的二维图像，现在广泛应用于手游，桌面动态壁纸等领域，各大博客系统也都推出或是第三方">
-<meta name="keywords" content="hexo,icarus,live2d,安装,故障问题">
+<meta name="keywords" content="hexo,icarus,live2d,安装,故障">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo-Icarus主题引入live2d插件和解决配置冲突">
 <meta property="og:url" content="http://kailalan.github.com/2019/07/10/Hexo-Icarus主题引入live2d插件和解决配置冲突/index.html">
@@ -16,7 +16,7 @@
 <meta property="og:description" content="前言搭建好自己Hexo博客，大家都会绞尽脑汁去装修自己的博客页面，作为二次元的小萌希望能在自己的博客上放上自己喜欢的动漫人物或者看板小挂件。在网上看了很多大牛分享的Hexo博客搭建教程中都有live2d插件身影出现。 live2d是一种应用于电子游戏的绘图渲染技术，通过一系列的连续图像和人物建模来生成一种类似三维模型的二维图像，现在广泛应用于手游，桌面动态壁纸等领域，各大博客系统也都推出或是第三方">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
-<meta property="og:updated_time" content="2019-07-10T14:50:48.103Z">
+<meta property="og:updated_time" content="2019-07-12T07:49:55.416Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo-Icarus主题引入live2d插件和解决配置冲突">
 <meta name="twitter:description" content="前言搭建好自己Hexo博客，大家都会绞尽脑汁去装修自己的博客页面，作为二次元的小萌希望能在自己的博客上放上自己喜欢的动漫人物或者看板小挂件。在网上看了很多大牛分享的Hexo博客搭建教程中都有live2d插件身影出现。 live2d是一种应用于电子游戏的绘图渲染技术，通过一系列的连续图像和人物建模来生成一种类似三维模型的二维图像，现在广泛应用于手游，桌面动态壁纸等领域，各大博客系统也都推出或是第三方">
@@ -154,7 +154,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    11 minutes read (About 1681 words)
+                    11 minutes read (About 1679 words)
                 </span>
                 
                 
@@ -178,46 +178,13 @@
 <pre><code>npm install --save hexo-helper-live2d</code></pre><h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>插件的配置可以直接配置在Hexo根目录下的配置文件<code>_config.yml</code>中，也可以配置在主题目录<code>themes目录</code>下的配置文件<code>_config.yml</code>文件中，一般推荐配置在Hexo根目录下的配置文件中，防止更换主题后live2d失效。但是如果你使用的主题是icarus,那么只能够配置在Hexo根目录下的配置文件中，不能配置到icarus主题目录下的配置文件中。</p>
 <p><img src="/2019/07/10/Hexo-Icarus主题引入live2d插件和解决配置冲突/201907102051.png" alt="页面效果"></p>
 <p>当你把插件的配置放在icarus主题的配置文件时，无论你修改插件的哪个参数都不会起作用，live2d插件虽然启动，但是却永远是shizuku看板娘，模型、位置、大小等都不能配置。</p>
-<p>通用配置：</p>
-<pre><code>live2d:
-    enable: true
-    # enable: false
-    scriptFrom: local # 默认
-    pluginRootPath: live2dw/ # 插件在站点上的根目录(相对路径)
-    pluginJsPath: lib/ # 脚本文件相对与插件根目录路径
-    pluginModelPath: assets/ # 模型文件相对与插件根目录路径
-    # scriptFrom: jsdelivr # jsdelivr CDN
-    # scriptFrom: unpkg # unpkg CDN
-    # scriptFrom: https://cdn.jsdelivr.net/npm/live2d-widget@3.x/lib/L2Dwidget.min.js # 你的自定义 url
-    tagMode: false # 标签模式, 是否仅替换 live2d tag标签而非插入到所有页面中
-    debug: false # 调试, 是否在控制台输出日志
-    model:
-        use: live2d-widget-model-wanko # npm-module package name
-        # use: wanko # 博客根目录/live2d_models/ 下的目录名
-        # use: ./wives/wanko # 相对于博客根目录的路径
-        # use: https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json # 你的自定义 url</code></pre><p>详细配置(本配置可以定义挂件位置、大小、缩放和手机端是否显示)</p>
-<pre><code>live2d:
-    enable: true
-    scriptFrom: local
-    pluginRootPath: live2dw/
-    pluginJsPath: lib/
-    pluginModelPath: assets/
-    tagMode: false
-    debug: false
-    model:
-        use: live2d-widget-model-wanko
-    display:
-        position: right
-        width: 150
-        height: 300
-    mobile:
-        show: true
-    react:
-        opacity: 0.7   </code></pre><p>高级配置</p>
+<p>通用配置：<br>​<br>    live2d:<br>        enable: true<br>        # enable: false<br>        scriptFrom: local # 默认<br>        pluginRootPath: live2dw/ # 插件在站点上的根目录(相对路径)<br>        pluginJsPath: lib/ # 脚本文件相对与插件根目录路径<br>        pluginModelPath: assets/ # 模型文件相对与插件根目录路径<br>        # scriptFrom: jsdelivr # jsdelivr CDN<br>        # scriptFrom: unpkg # unpkg CDN<br>        # scriptFrom: <a href="https://cdn.jsdelivr.net/npm/live2d-widget@3.x/lib/L2Dwidget.min.js" target="_blank" rel="noopener">https://cdn.jsdelivr.net/npm/live2d-widget@3.x/lib/L2Dwidget.min.js</a> # 你的自定义 url<br>        tagMode: false # 标签模式, 是否仅替换 live2d tag标签而非插入到所有页面中<br>        debug: false # 调试, 是否在控制台输出日志<br>        model:<br>            use: live2d-widget-model-wanko # npm-module package name<br>            # use: wanko # 博客根目录/live2d_models/ 下的目录名<br>            # use: ./wives/wanko # 相对于博客根目录的路径<br>            # use: <a href="https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json" target="_blank" rel="noopener">https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json</a> # 你的自定义 url</p>
+<p>详细配置(本配置可以定义挂件位置、大小、缩放和手机端是否显示)<br>​<br>    live2d:<br>        enable: true<br>        scriptFrom: local<br>        pluginRootPath: live2dw/<br>        pluginJsPath: lib/<br>        pluginModelPath: assets/<br>        tagMode: false<br>        debug: false<br>        model:<br>            use: live2d-widget-model-wanko<br>        display:<br>            position: right<br>            width: 150<br>            height: 300<br>        mobile:<br>            show: true<br>        react:<br>            opacity: 0.7   </p>
+<p>高级配置</p>
 <p>用户高度自定义设置，小白玩家不必理会，老司机请随意，官方API地址：<a href="https://l2dwidget.js.org/docs/class/src/index.js~L2Dwidget.html#instance-method-init" title="L2Dwidget | live2d-widget.js" target="_blank" rel="noopener">L2Dwidget | live2d-widget.js</a></p>
 <h1 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h1><p>模型的安装有两种方式：</p>
-<h2 id="1、使用-npm-下载的模型"><a href="#1、使用-npm-下载的模型" class="headerlink" title="1、使用 npm 下载的模型"></a>1、使用 npm 下载的模型</h2><p>直接通过npm来安装，然后编辑配置文件中的<code>model.use</code>项，将其修改为模型的包名</p>
-<pre><code>npm install live2d-widget-model-shizuku</code></pre><p>所有模型列表如下：</p>
+<h2 id="1、使用-npm-下载的模型"><a href="#1、使用-npm-下载的模型" class="headerlink" title="1、使用 npm 下载的模型"></a>1、使用 npm 下载的模型</h2><p>直接通过npm来安装，然后编辑配置文件中的<code>model.use</code>项，将其修改为模型的包名<br>​<br>    npm install live2d-widget-model-shizuku</p>
+<p>所有模型列表如下：</p>
 <ul>
 <li>live2d-widget-model-chitose</li>
 <li>live2d-widget-model-epsilon2_1</li>
@@ -256,7 +223,7 @@
 <p>可直接输入相对于博客根目录的自定义路径到<code>model.use</code>中,示例: <code>./wives/shizuku</code></p>
 <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>以上教程都是整合网上Hexo的live2d插件安装教程而来的，网上的教程都是在官方主题或者NexT主题的基础上进行配置的，我的博客使用的是icarus主题，使用网上的教程进行配置时除了会出现上面提到的主题配置文件配置live2d插件无效的问题,还有一个就是浏览器的控制台报错。虽然这个报错不影响页面，作为完美主义者和有一点小强迫症的我，怎么能让我的小站出现报红，通过关键字排查，终于发现问题所在和解决方案。</p>
 <p><img src="/2019/07/10/Hexo-Icarus主题引入live2d插件和解决配置冲突/201907102215.png" alt="调试控制台截图"></p>
-<p>在icarus主题配置文件<code>_config.yml</code>中的配置中的plugins.mathjax属性默认是true,将该属性值改为false,重新生成部署，完美！MathJax是前端支持数学公式的一个插件，为了让前端支持LaTex的数学公式，并且渲染好看的样式。关闭了这个插件不知道会影响到什么，知道的大大麻烦留言一下，谢谢！</p>
+<p>在icarus主题配置文件`_config.yml的plugins.mathjax属性默认是true,将该属性值改为false,重新生成部署，完美！MathJax是前端支持数学公式的一个插件，为了让前端支持LaTex的数学公式，并且渲染好看的样式。关闭了这个插件不知道会影响到什么，知道的大大麻烦留言一下，谢谢！</p>
 <p>参考文章：</p>
 <p><a href="https://www.yanjiayu.cn/posts/ff508987.html" target="_blank" rel="noopener">Hexo 博客利用 live2d 插件放置一个萌萌哒看板娘</a></p>
 <p><a href="https://blog.csdn.net/u011054333/article/details/82718910" target="_blank" rel="noopener">在Hexo博客上添加可爱的Live 2D模型</a></p>
@@ -267,7 +234,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/hexo/">hexo</a>, <a class="has-link-grey -link" href="/tags/icarus/">icarus</a>, <a class="has-link-grey -link" href="/tags/live2d/">live2d</a>, <a class="has-link-grey -link" href="/tags/安装/">安装</a>, <a class="has-link-grey -link" href="/tags/故障问题/">故障问题</a>
+                    <a class="has-link-grey -link" href="/tags/hexo/">hexo</a>, <a class="has-link-grey -link" href="/tags/icarus/">icarus</a>, <a class="has-link-grey -link" href="/tags/live2d/">live2d</a>, <a class="has-link-grey -link" href="/tags/安装/">安装</a>, <a class="has-link-grey -link" href="/tags/故障/">故障</a>
                 </div>
             </div>
         </div>
@@ -359,7 +326,7 @@
                         Tags
                     </p>
                     <p class="title has-text-weight-normal">
-                        10
+                        9
                     </p>
                 </div>
             </div>
@@ -644,14 +611,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/故障/">
                         <span class="tag">故障</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/故障问题/">
-                        <span class="tag">故障问题</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">3</span>
                     </a>
                 </div>
                 
@@ -666,7 +626,7 @@
         <h3 class="menu-label">
             Tag Cloud
         </h3>
-        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/icarus/" style="font-size: 20px;">icarus</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/springboot/" style="font-size: 10px;">springboot</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a> <a href="/tags/故障问题/" style="font-size: 10px;">故障问题</a>
+        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/springboot/" style="font-size: 10px;">springboot</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a>
     </div>
 </div>
 
