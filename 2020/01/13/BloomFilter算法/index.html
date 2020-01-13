@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>BloomFilter算法 - Kail的博客</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="一、简介Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BloomFilter算法">
+<meta property="og:url" content="http://kailalan.github.com/2020/01/13/BloomFilter算法/index.html">
+<meta property="og:site_name" content="Kail的博客">
+<meta property="og:description" content="一、简介Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-13T16:00:52.949Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BloomFilter算法">
+<meta name="twitter:description" content="一、简介Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。">
+<meta name="twitter:image" content="http://kailalan.github.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="BloomFilter算法" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">Home</a>
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+                <a class="navbar-item" href="/categories">Categories</a>
+                
+                <a class="navbar-item" href="/tags">Tags</a>
+                
+                <a class="navbar-item" href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/kaialan">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-13T15:42:46.000Z">2020-01-13</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    24 minutes read (About 3583 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                BloomFilter算法
+            
+        </h1>
+        <div class="content">
+            <h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。</p>
+<a id="more"></a>
+
+<h2 id="二、应用场景"><a href="#二、应用场景" class="headerlink" title="二、应用场景"></a>二、应用场景</h2><p>在正式介绍Bloom Filter算法之前，先来看看什么时候需要用到Bloom Filter算法。</p>
+<h3 id="1-HTTP缓存服务器、Web爬虫等"><a href="#1-HTTP缓存服务器、Web爬虫等" class="headerlink" title="1.HTTP缓存服务器、Web爬虫等"></a>1.HTTP缓存服务器、Web爬虫等</h3><p>主要工作是判断一条URL是否在现有的URL集合之中（可以认为这里的数据量级上亿）。<br>对于HTTP缓存服务器，当本地局域网中的PC发起一条HTTP请求时，缓存服务器会先查看一下这个URL是否已经存在于缓存之中，如果存在的话就没有必要去原始的服务器拉取数据了（为了简单起见，我们假设数据没有发生变化），这样既能节省流量，还能加快访问速度，以提高用户体验。<br>对于Web爬虫，要判断当前正在处理的网页是否已经处理过了，同样需要当前URL是否存在于已经处理过的URL列表之中。</p>
+<h3 id="2-垃圾邮件过滤"><a href="#2-垃圾邮件过滤" class="headerlink" title="2.垃圾邮件过滤"></a>2.垃圾邮件过滤</h3><p>假设邮件服务器通过发送方的邮件域或者IP地址对垃圾邮件进行过滤，那么就需要判断当前的邮件域或者IP地址是否处于黑名单之中。如果邮件服务器的通信邮件数量非常大（也可以认为数据量级上亿），那么也可以使用Bloom Filter算法。</p>
+<h2 id="三、专业术语"><a href="#三、专业术语" class="headerlink" title="三、专业术语"></a>三、专业术语</h2><p>这里有必要介绍一下False Positive和False Negative的概念（更形象的描述可以阅读第4条参考）。<br>False Positive中文可以理解为“假阳性”，形象的一点说就是“误报”，后面将会说道Bloom Filter存在误报的情况，现实生活中也有误报，比如说去体检的时候，医生告诉你XXX检测是阳性，而实际上是阴性，也就是说误报了，是假阳性，杀毒软件误报也是同样的概念。<br>False Negative，中文可以理解为“假阴性”，形象的一点说是“漏报”。医生告诉你XXX检测为阴性，实际上你是阳性，你是有病的（Sorry, it’s just a joke），那就是漏报了。同样杀毒软件也存在漏报的情况。</p>
+<h2 id="四、Bloom-Filter算法"><a href="#四、Bloom-Filter算法" class="headerlink" title="四、Bloom Filter算法"></a>四、Bloom Filter算法</h2><p>初始状态下，Bloom Filter是一个m位的位数组，且数组被0所填充。同时，我们需要定义k个不同的hash函数，每一个hash函数都随机的将每一个输入元素映射到位数组中的一个位上。那么对于一个确定的输入，我们会得到k个索引。</p>
+<p>插入元素：经过k个hash函数的映射，我们会得到k个索引，我们把位数组中这k个位置全部置1（不管其中的位之前是0还是1）</p>
+<p>查询元素：输入元素经过k个hash函数的映射会得到k个索引，如果位数组中这k个索引任意一处是0，那么就说明这个元素不在集合之中；如果元素处于集合之中，那么当插入元素的时候这k个位都是1。但如果这k个索引处的位都是1，被查询的元素就一定在集合之中吗？答案是不一定，也就是说出现了False Positive的情况（但Bloom Filter不会出现False Negative的情况）</p>
+<p><img src="/2020/01/13/BloomFilter算法/BloomFilter.png" alt="BloomFilter原理"></p>
+<p>在上图中，当插入x、y、z这三个元素之后，再来查询w，会发现w不在集合之中，而如果w经过三个hash函数计算得出的结果所得索引处的位全是1，那么Bloom Filter就会告诉你，w在集合之中，实际上这里是误报，w并不在集合之中。</p>
+<p><strong>False Positive Rate</strong><br>Bloom Filter的误报率到底有多大？下面在数学上进行一番推敲。假设HASH函数输出的索引值落在m位的数组上的每一位上都是等可能的。那么，对于一个给定的HASH函数，在进行某一个运算的时候，一个特定的位没有被设置为1的概率是<br><img src="/2020/01/13/BloomFilter算法/26164436_UWdS.png" alt></p>
+<p>那么，对于所有的k个HASH函数，都没有把这个位设置为1的概率是</p>
+<p><img src="/2020/01/13/BloomFilter算法/26164436_JKql.png" alt></p>
+<p>如果我们已经插入了n个元素，那么对于一个给定的位，这个位仍然是0的概率是</p>
+<p><img src="/2020/01/13/BloomFilter算法/26164436_Uyxv.png" alt></p>
+<p>那么，如果插入n个元素之后，这个位是1的概率是</p>
+<p><img src="/2020/01/13/BloomFilter算法/26164437_hdtC.png" alt></p>
+<p>如果对一个特定的元素存在误报，那么这个元素的经过HASH函数所得到的k个索引全部都是1，概率也就是</p>
+<p><img src="/2020/01/13/BloomFilter算法/26164437_RFO7.png" alt></p>
+<p>根据<a href="http://zh.wikipedia.org/wiki/E_(数学常数)" target="_blank" rel="noopener">常数e</a>的定义，可以近似的表示为：</p>
+<p><img src="/2020/01/13/BloomFilter算法/26164437_A0qN.png" alt></p>
+<p><strong>关于误报</strong><br>有时候误报对实际操作并不会带来太大的影响，比如对于HTTP缓存服务器，如果一条URL被误以为存在与缓存服务器之中，那么当取数据的时候自然会无法取到，最终还是要从原始服务器当中获取，之后再把记录插入缓存服务器，几乎没有什么不可以接受的。<br>对于安全软件，有着“另可错报，不可误报”的说法，如果你把一个正常软件误判为病毒，对使用者来说不会有什么影响（如果用户相信是病毒，那么就是删除这个文件罢了，如果用户执意要执行，那么后果也只能由用户来承担）；如果你把一个病毒漏判了，那么对用户造成的后果是不可设想的……更有甚者，误报在某种程度上能让部分用户觉得你很专业……</p>
+<p><strong>最优的哈希函数个数</strong></p>
+<p>既然Bloom Filter要靠多个哈希函数将集合映射到位数组中，那么应该选择几个哈希函数才能使元素查询时的错误率降到最低呢？这里有两个互斥的理由：如果哈希函数的个数多，那么在对一个不属于集合的元素进行查询时得到0的概率就大；但另一方面，如果哈希函数的个数少，那么位数组中的0就多。为了得到最优的哈希函数个数，我们需要根据上一小节中的错误率公式进行计算。</p>
+<p>先用p和f进行计算。注意到f = exp(k ln(1 − e<sup>−kn/m)</sup>)，我们令g = k ln(1 − e<sup>−kn/m</sup>)，只要让g取到最小，f自然也取到最小。由于p = e<sup>-kn/m</sup>，我们可以将g写成</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092948_OL69.jpg" alt></p>
+<p>根据对称性法则可以很容易看出当p = 1/2，也就是k = ln2· (m/n)时，g取得最小值。在这种情况下，最小错误率f等于(1/2)k ≈ (0.6185)m/n。另外，注意到p是位数组中某一位仍是0的概率，所以p = 1/2对应着位数组中0和1各一半。换句话说，要想保持错误率低，最好让位数组有一半还空着。</p>
+<p>需要强调的一点是，p = 1/2时错误率最小这个结果并不依赖于近似值p和f。同样对于f’ = exp(k ln(1 − (1 − 1/m)<sup>kn</sup>))，g’ = k ln(1 − (1 − 1/m)<sup>kn</sup>)，p’ = (1 − 1/m)<sup>kn</sup>，我们可以将g’写成</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092949_MHJ2.jpg" alt></p>
+<p>同样根据对称性法则可以得到当p’ = 1/2时，g’取得最小值。</p>
+<p><strong>位数组的大小</strong></p>
+<p>下面我们来看看，在不超过一定错误率的情况下，Bloom Filter至少需要多少位才能表示全集中任意n个元素的集合。假设全集中共有u个元素，允许的最大错误率为є，下面我们来求位数组的位数m。</p>
+<p> 假设X为全集中任取n个元素的集合，F(X)是表示X的位数组。那么对于集合X中任意一个元素x，在s = F(X)中查询x都能得到肯定的结果，即s能够接受x。显然，由于Bloom Filter引入了错误，s能够接受的不仅仅是X中的元素，它还能够є (u - n)个false positive。因此，对于一个确定的位数组来说，它能够接受总共n + є (u - n)个元素。在n + є (u - n)个元素中，s真正表示的只有其中n个，所以一个确定的位数组可以表示</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092949_Fc37.jpg" alt></p>
+<p> 个集合。m位的位数组共有2m个不同的组合，进而可以推出，m位的位数组可以表示</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092949_gr0G.jpg" alt></p>
+<p>个集合。全集中n个元素的集合总共有</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092949_T6UD.jpg" alt></p>
+<p>个，因此要让m位的位数组能够表示所有n个元素的集合，必须有</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092949_dAwW.jpg" alt></p>
+<p>即：</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092949_TfUB.jpg" alt></p>
+<p>上式中的近似前提是n和єu相比很小，这也是实际情况中常常发生的。根据上式，我们得出结论：在错误率不大于є的情况下，m至少要等于n log2(1/є)才能表示任意n个元素的集合。</p>
+<p>上一小节中我们曾算出当k = ln2· (m/n)时错误率f最小，这时f = (1/2)k = (1/2)mln2 / n。现在令f≤є，可以推出</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092950_Obwx.jpg" alt></p>
+<p>这个结果比前面我们算得的下界n log2(1/є)大了log2 e ≈ 1.44倍。这说明在哈希函数的个数取到最优时，要让错误率不超过є，m至少需要取到最小值的1.44倍。</p>
+<p><strong>总结</strong></p>
+<p>在计算机科学中，我们常常会碰到时间换空间或者空间换时间的情况，即为了达到某一个方面的最优而牺牲另一个方面。Bloom Filter在时间空间这两个因素之外又引入了另一个因素：错误率。在使用Bloom Filter判断一个元素是否属于某个集合时，会有一定的错误率。也就是说，有可能把不属于这个集合的元素误认为属于这个集合（False Positive），但不会把属于这个集合的元素误认为不属于这个集合（False Negative）。在增加了错误率这个因素之后，Bloom Filter通过允许少量的错误来节省大量的存储空间。</p>
+<p>自从Burton Bloom在70年代提出Bloom Filter之后，Bloom Filter就被广泛用于拼写检查和数据库系统中。近一二十年，伴随着网络的普及和发展，Bloom Filter在网络领域获得了新生，各种Bloom Filter变种和新的应用不断出现。可以预见，随着网络应用的不断深入，新的变种和应用将会继续出现，Bloom Filter必将获得更大的发展。</p>
+<h2 id="五、Counting-Bloom-Filter"><a href="#五、Counting-Bloom-Filter" class="headerlink" title="五、Counting Bloom Filter"></a>五、Counting Bloom Filter</h2><p>从前面对Bloom Filter的介绍可以看出，标准的Bloom Filter是一种很简单的数据结构，它只支持插入和查找两种操作。在所要表达的集合是静态集合的时候，标准Bloom Filter可以很好地工作，但是如果要表达的集合经常变动，标准Bloom Filter的弊端就显现出来了，因为它不支持删除操作。</p>
+<p>Counting Bloom Filter的出现解决了这个问题，它将标准Bloom Filter位数组的每一位扩展为一个小的计数器（Counter），在插入元素时给对应的k（k为哈希函数个数）个Counter的值分别加1，删除元素时给对应的k个Counter的值分别减1。Counting Bloom Filter通过多占用几倍的存储空间的代价，给Bloom Filter增加了删除操作。下一个问题自然就是，到底要多占用几倍呢？</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092950_YwJJ.jpg" alt></p>
+<p>我们先计算第i个Counter被增加j次的概率，其中n为集合元素个数，k为哈希函数个数，m为Counter个数（对应着原来位数组的大小）：</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092950_4DIm.jpg" alt></p>
+<p>上面等式右端的表达式中，前一部分表示从nk次哈希中选择j次，中间部分表示j次哈希都选中了第i个Counter，后一部分表示其它nk – j次哈希都没有选中第i个Counter。因此，第i个Counter的值大于j的概率可以限定为：</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092950_rNoc.jpg" alt></p>
+<p>上式第二步缩放中应用了估计阶乘的斯特林公式：</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092950_I7Uz.gif" alt></p>
+<p>在Bloom Filter<a href="http://blog.csdn.net/jiaomeng/archive/2007/01/27/1495500.aspx" target="_blank" rel="noopener">概念和原理</a>一文中，我们提到过k的最优值为(ln2)m/n，现在我们限制k ≤ (ln2)m/n，就可以得到如下结论：</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092951_cIMo.jpg" alt></p>
+<p>如果每个Counter分配4位，那么当Counter的值达到16时就会溢出。这个概率为：</p>
+<p><img src="/2020/01/13/BloomFilter算法/29092951_XkSA.jpg" alt></p>
+<p>这个值足够小，因此对于大多数应用程序来说，4位就足够了。</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/算法/">算法</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/">
+                <span class="level-item">Redis-避免缓存穿透的利器之BloomFilter</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/images/avatar.png" alt="统一鱼蛋粉">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        统一鱼蛋粉
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Java Engineer
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>China,Guangzhou</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        17
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        3
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        14
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/kailalan" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/kailalan">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="QQ" href="https://facebook.com">
+                
+                <i class="fab fa-qq"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="WeChat" href="https://twitter.com">
+                
+                <i class="fab fa-weixin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
+                
+                <i class="fab fa-dribbble"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/GIT学习/">
+            <span class="level-start">
+                <span class="level-item">GIT学习</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Hexo/">
+            <span class="level-start">
+                <span class="level-item">Hexo</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/开发问题记录/">
+            <span class="level-start">
+                <span class="level-item">开发问题记录</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/BloomFilter算法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="BloomFilter算法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T15:42:46.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/BloomFilter算法/" class="has-link-black-ter is-size-6">BloomFilter算法</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Redis-避免缓存穿透的利器之BloomFilter">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T06:15:15.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/" class="has-link-black-ter is-size-6">Redis-避免缓存穿透的利器之BloomFilter</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="什么是Redis缓存穿透、缓存雪崩和缓存击穿">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T03:42:21.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/" class="has-link-black-ter is-size-6">什么是Redis缓存穿透、缓存雪崩和缓存击穿</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/10/redis中主从、哨兵和集群三者的区别/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="redis中主从、哨兵和集群三者的区别">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-10T02:53:29.000Z">2020-01-10</time></div>
+                    <a href="/2020/01/10/redis中主从、哨兵和集群三者的区别/" class="has-link-black-ter is-size-6">redis中主从、哨兵和集群三者的区别</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/26/Java的基本类型/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Java的基本类型">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-26T15:13:50.000Z">2019-12-26</time></div>
+                    <a href="/2019/12/26/Java的基本类型/" class="has-link-black-ter is-size-6">Java的基本类型</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/git/">
+                        <span class="tag">git</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/hexo/">
+                        <span class="tag">hexo</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/icarus/">
+                        <span class="tag">icarus</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/java/">
+                        <span class="tag">java</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/live2d/">
+                        <span class="tag">live2d</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/maven/">
+                        <span class="tag">maven</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/redis/">
+                        <span class="tag">redis</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/springboot/">
+                        <span class="tag">springboot</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/位运算/">
+                        <span class="tag">位运算</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/基础/">
+                        <span class="tag">基础</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安装/">
+                        <span class="tag">安装</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/故障/">
+                        <span class="tag">故障</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/模板/">
+                        <span class="tag">模板</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/算法/">
+                        <span class="tag">算法</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 20px;">redis</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a> <a href="/tags/位运算/" style="font-size: 10px;">位运算</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a> <a href="/tags/模板/" style="font-size: 10px;">模板</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="BloomFilter算法" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Kail Alan&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/kailalan">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+			<div>
+				<span id="timeDate">载入天数...</span>
+				<span id="times">载入时分秒...</span>
+				<script>
+					var now = new Date(); 
+					function createtime() { 
+						var grt= new Date("07/09/2019 00:00:00");//此处修改你的建站时间或者网站上线时间 
+						now.setTime(now.getTime()+250); 
+						days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+						hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+						if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+						mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+						seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+						snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+						document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+						document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+					} 
+					setInterval("createtime()",250);
+				</script>
+			</div>
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
