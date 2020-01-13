@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>Tag: -redis - Kail的博客</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Kail的博客">
+<meta property="og:url" content="http://kailalan.github.com/tags/redis/index.html">
+<meta property="og:site_name" content="Kail的博客">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kail的博客">
+<meta name="twitter:image" content="http://kailalan.github.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="Kail的博客" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">Home</a>
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+                <a class="navbar-item" href="/categories">Categories</a>
+                
+                <a class="navbar-item" href="/tags">Tags</a>
+                
+                <a class="navbar-item" href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/kaialan">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    <div class="card-content">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/tags">Tags</a></li>
+            <li class="is-active"><a href="#" aria-current="page">-redis</a></li>
+        </ul>
+        </nav>
+    </div>
+</div>
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-13T06:15:15.000Z">2020-01-13</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    a few seconds read (About 7 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/">Redis-避免缓存穿透的利器之BloomFilter</a>
+            
+        </h1>
+        <div class="content">
+            <a id="more"></a>
+<h1 id="什么是-Bloom-Filter？"><a href="#什么是-Bloom-Filter？" class="headerlink" title="什么是 Bloom Filter？"></a>什么是 Bloom Filter？</h1>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-13T03:42:21.000Z">2020-01-13</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    14 minutes read (About 2093 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/">什么是Redis缓存穿透、缓存雪崩和缓存击穿</a>
+            
+        </h1>
+        <div class="content">
+            <a id="more"></a>
+<h1 id="一、缓存处理流程"><a href="#一、缓存处理流程" class="headerlink" title="一、缓存处理流程"></a>一、缓存处理流程</h1><p>前台请求，后台先从缓存中取数据，取到直接返回结果，取不到时从数据库中取，数据库取到更新缓存，并返回结果，数据库也没取到，那直接返回空结果。</p>
+<p><img src="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/%E7%BC%93%E5%AD%98%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.png" alt="缓存处理流程"></p>
+<h1 id="二、缓存穿透"><a href="#二、缓存穿透" class="headerlink" title="二、缓存穿透"></a>二、缓存穿透</h1><p>缓存穿透，是指查询一个数据库一定不存在的数据，大量请求穿透redis,直接对数据库造成压力，甚至压垮数据库。</p>
+<p>正常的使用缓存流程大致是，数据查询先进行缓存查询，如果key不存在或者key已经过期，再对数据库进行查询，并把查询到的对象，放进缓存。如果数据库查询对象为空，则不放进缓存。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> Goods <span class="hljs-title">searchArticleById</span><span class="hljs-params">(Long goodsId)</span></span>&#123;</span><br><span class="line">    Object object = redisTemplate.opsForValue().get(String.valueOf(goodsId));</span><br><span class="line">    <span class="hljs-keyword">if</span>(object != <span class="hljs-keyword">null</span>)&#123;<span class="hljs-comment">//缓存查询命中</span></span><br><span class="line">        <span class="hljs-keyword">return</span> (Goods) object;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-comment">//缓存查询没有命中，开始数据库查询</span></span><br><span class="line">    Goods goods = goodsMapper.selectByPrimaryKey(goodsId);</span><br><span class="line">    System.out.println(<span class="hljs-string">"====主键ID："</span>+goodsId+<span class="hljs-string">"，进行了数据库查询===="</span>);</span><br><span class="line">    <span class="hljs-keyword">if</span>(goods != <span class="hljs-keyword">null</span>)&#123;</span><br><span class="line">        redisTemplate.opsForValue.set(String.valueOf(goodsId),goods,<span class="hljs-number">60</span>,TimeUnit.MINUTES);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> goods;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码流程</p>
+<ul>
+<li><p>1、参数传入对象主键ID</p>
+</li>
+<li><p>2、根据key从缓存中获取对象</p>
+</li>
+<li><p>3、如果对象不为空，直接返回</p>
+</li>
+<li><p>3、如果对象为空，进行数据库查询</p>
+</li>
+<li><p>5、如果从数据库查询出的对象不为空，则放入缓存（设定过期时间）</p>
+</li>
+</ul>
+<p>想象一下这个情况，如果传入的参数为-1，会是怎么样？这个-1，就是一定不存在的对象。就会每次都去查询数据库，而每次查询都是空，每次又都不会进行缓存。假如有恶意攻击，就可以利用这个漏洞，对数据库造成压力，甚至压垮数据库。即便是采用UUID，也是很容易找到一个不存在的KEY，进行攻击。</p>
+<p>解决方案：</p>
+<ul>
+<li><p>1、接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；</p>
+</li>
+<li><p>2、采用<a href="../Redis-避免缓存穿透的利器之BloomFilter"><strong>布隆过滤器</strong></a>，使用一个足够大的bitmap，用于存储可能访问的key，不存在的key直接被过滤；</p>
+</li>
+<li><p>3、从缓存取不到的数据，在数据库中也没有取到，这时也可以将key-value对写为key-null，缓存有效时间可以设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击。</p>
+</li>
+</ul>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> Goods <span class="hljs-title">searchArticleById</span><span class="hljs-params">(Long goodsId)</span></span>&#123;</span><br><span class="line">    Object object = redisTemplate.opsForValue().get(String.valueOf(goodsId));</span><br><span class="line">    <span class="hljs-keyword">if</span>(object != <span class="hljs-keyword">null</span>)&#123;<span class="hljs-comment">//缓存查询命中</span></span><br><span class="line">        <span class="hljs-keyword">return</span> (Goods) object;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-comment">//缓存查询没有命中，开始数据库查询</span></span><br><span class="line">    Goods goods = goodsMapper.selectByPrimaryKey(goodsId);</span><br><span class="line">    System.out.println(<span class="hljs-string">"====主键ID："</span>+goodsId+<span class="hljs-string">"，进行了数据库查询===="</span>);</span><br><span class="line">    <span class="hljs-keyword">if</span>(goods != <span class="hljs-keyword">null</span>)&#123;</span><br><span class="line">        redisTemplate.opsForValue.set(String.valueOf(goodsId),goods,<span class="hljs-number">60</span>,TimeUnit.MINUTES);</span><br><span class="line">    &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">        redisTemplate.opsForValue.set(String.valueOf(goodsId),<span class="hljs-keyword">null</span>,<span class="hljs-number">30</span>,TimeUnit.SECONDS);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> goods;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、缓存击穿"><a href="#三、缓存击穿" class="headerlink" title="三、缓存击穿"></a>三、缓存击穿</h1><p>缓存击穿，是指缓存中没有但数据库中有的数据（一般是缓存时间到期），这个key非常热点，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一个屏障上凿开了一个洞。</p>
+<p>解决方案：</p>
+<ul>
+<li>1、不设置缓存时间（设置数据永远不过期），由后台创建定时任务去维护这部分缓存数据。这种方法请求时直接从缓存中获取数据，无需再判断是否从数据库中获取，定时任务也可在请求较少的时间段分批更新缓存数据。当然代码量、代码复杂度增大，分批更新代表需要多个定时任务去维护缓存数据，同时更新有可能会造成缓存雪崩的情况；</li>
+<li>2、使用同步锁  <strong>synchronized</strong>  关键字，修饰在获取缓存的方法里面，保证在多用户同时请求条件下，只有第一个进入的线程去判断是否要查询数据库并存入缓存，其他线程只需在第一个线程结束后，从缓存中读取数据即可，无需再查询数据库。（本方法只适用于单节点站点）</li>
+</ul>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> Goods <span class="hljs-title">searchArticleById</span><span class="hljs-params">(Long goodsId)</span></span>&#123;</span><br><span class="line">    Goods goods = (Goods)redisTemplate.opsForValue().get(String.valueOf(goodsId));</span><br><span class="line">    <span class="hljs-keyword">if</span>(goods == <span class="hljs-keyword">null</span>)&#123;<span class="hljs-comment">//缓存查询命中</span></span><br><span class="line">        <span class="hljs-comment">//第一个线程进入获取缓存中的数据，其他线程等待</span></span><br><span class="line">        <span class="hljs-keyword">synchronized</span>(<span class="hljs-keyword">this</span>)&#123;</span><br><span class="line">            goods = (Goods)redisTemplate.opsForValue().get(String.valueOf(goodsId));</span><br><span class="line">            <span class="hljs-keyword">if</span>(goods == <span class="hljs-keyword">null</span>)&#123;</span><br><span class="line">                <span class="hljs-comment">//缓存查询没有命中，开始数据库查询</span></span><br><span class="line">                goods = goodsMapper.selectByPrimaryKey(goodsId);</span><br><span class="line">                System.out.println(<span class="hljs-string">"====主键ID："</span>+goodsId+<span class="hljs-string">"，进行了数据库查询===="</span>);</span><br><span class="line">                <span class="hljs-keyword">if</span>(goods == <span class="hljs-keyword">null</span>)&#123;</span><br><span class="line">                    <span class="hljs-comment">//数据库中没有查询到数据，设置空值，缓存有效时间为30秒</span></span><br><span class="line">                    redisTemplate.opsForValue.set(String.valueOf(goodsId),<span class="hljs-keyword">null</span>,<span class="hljs-number">30</span>,TimeUnit.SECONDS);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">                <span class="hljs-comment">//可用数据在redis中存储60分钟</span></span><br><span class="line">                redisTemplate.opsForValue.set(String.valueOf(goodsId),goods,<span class="hljs-number">60</span>,TimeUnit.MINUTES);</span><br><span class="line">            &#125;     </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> goods;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>3、使用互斥锁加锁获取缓存。也就是当获取的value值为空时（这里的空表示缓存过期），先加锁，然后从数据库加载并放入缓存，最后释放锁。如果其他线程获取锁失败，则睡眠一段时间后重试。下面使用Redis的setnx来实现分布式锁，如下所示：</li>
+</ul>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> Goods <span class="hljs-title">searchArticleById</span><span class="hljs-params">(Long goodsId)</span></span>&#123;</span><br><span class="line">    Goods goods = (Goods)redisTemplate.opsForValue().get(String.valueOf(goodsId));</span><br><span class="line">    <span class="hljs-keyword">if</span>(goods == <span class="hljs-keyword">null</span>)&#123;<span class="hljs-comment">//缓存查询命中</span></span><br><span class="line">        <span class="hljs-comment">//设置3分钟过期时间，避免互斥锁死锁</span></span><br><span class="line">        String key_mutex = String.valueOf(goodsId))+<span class="hljs-string">"_mutex"</span>;</span><br><span class="line">        <span class="hljs-keyword">if</span> (redisTemplate.opsForValue().setIfAbsent(key_mutex,<span class="hljs-string">"1"</span>,<span class="hljs-number">3</span> * <span class="hljs-number">60</span>, TimeUnit.SECONDS)) &#123;     </span><br><span class="line">            goods = goodsMapper.selectByPrimaryKey(goodsId);</span><br><span class="line">            System.out.println(<span class="hljs-string">"====主键ID："</span>+goodsId+<span class="hljs-string">"，进行了数据库查询===="</span>);</span><br><span class="line">            <span class="hljs-keyword">if</span>(goods == <span class="hljs-keyword">null</span>)&#123;</span><br><span class="line">                <span class="hljs-comment">//缓存查询没有命中，开始数据库查询</span></span><br><span class="line">                goods = goodsMapper.selectByPrimaryKey(goodsId);</span><br><span class="line">                System.out.println(<span class="hljs-string">"====主键ID："</span>+goodsId+<span class="hljs-string">"，进行了数据库查询===="</span>);</span><br><span class="line">                <span class="hljs-keyword">if</span>(goods == <span class="hljs-keyword">null</span>)&#123;</span><br><span class="line">                    <span class="hljs-comment">//数据库中没有查询到数据，设置空值，缓存有效时间为30秒</span></span><br><span class="line">                    redisTemplate.opsForValue.set(String.valueOf(goodsId),<span class="hljs-keyword">null</span>,<span class="hljs-number">30</span>,TimeUnit.SECONDS);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">                <span class="hljs-comment">//可用数据在redis中存储60分钟</span></span><br><span class="line">                redisTemplate.opsForValue.set(String.valueOf(goodsId),goods,<span class="hljs-number">60</span>,TimeUnit.MINUTES);</span><br><span class="line">            &#125;</span><br><span class="line">            redisTemplate.opsForValue().getOperations().delete(key_mutex);  </span><br><span class="line">        &#125; <span class="hljs-keyword">else</span> &#123;  </span><br><span class="line">            <span class="hljs-comment">//其他线程休息50毫秒后重试  </span></span><br><span class="line">            Thread.sleep(<span class="hljs-number">50</span>);</span><br><span class="line">            <span class="hljs-keyword">return</span> searchArticleById(Long goodsId);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> goods;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、缓存雪崩"><a href="#四、缓存雪崩" class="headerlink" title="四、缓存雪崩"></a>四、缓存雪崩</h1><p>缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至宕机或断网。和缓存击穿不同的是，缓存击穿指并发查同一条数据，缓存雪崩是不同数据都过期了，很多数据都查不到从而查数据库。其实集中过期，倒不是非常致命，比较致命的缓存雪崩，是缓存服务器某个节点宕机或断网。因为自然形成的缓存雪崩，一定是在某个时间段集中创建缓存，那么那个时候数据库能顶住压力，这个时候，数据库也是可以顶住压力的。无非就是对数据库产生周期性的压力而已。而缓存服务节点的宕机，对数据库服务器造成的压力是不可预知的，很有可能瞬间就把数据库压垮。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Goods goods = goodsMapper.selectByPrimaryKey(goodsId);</span><br><span class="line"><span class="hljs-keyword">if</span>(goods ！= <span class="hljs-keyword">null</span>)&#123;<span class="hljs-comment">//数据库查询不为空</span></span><br><span class="line">    <span class="hljs-keyword">if</span>(goods.getGoodsCategory().equals(<span class="hljs-string">"女装"</span>))&#123;</span><br><span class="line">        <span class="hljs-comment">//热门商品类目</span></span><br><span class="line">        Random r = <span class="hljs-keyword">new</span> Random();</span><br><span class="line">        <span class="hljs-keyword">int</span> time =<span class="hljs-number">3600</span> +r.nextint(<span class="hljs-number">36000</span>);<span class="hljs-comment">//随机</span></span><br><span class="line">        redisTemplate.opsForValue.set(String.valueOf(goodsId),goods,time,TimeUnit.MINUTES);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">if</span>(goods.getGoodsCategory().equals(<span class="hljs-string">"图书"</span>))&#123;</span><br><span class="line">        <span class="hljs-comment">//冷门商品类目</span></span><br><span class="line">        Random r = <span class="hljs-keyword">new</span> Random();</span><br><span class="line">        <span class="hljs-keyword">int</span> time =<span class="hljs-number">600</span> +r.nextint(<span class="hljs-number">600</span>);<span class="hljs-comment">//随机</span></span><br><span class="line">        redisTemplate.opsForValue.set(String.valueOf(goodsId),goods,time,TimeUnit.MINUTES);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">    <span class="hljs-comment">//空对象</span></span><br><span class="line">    redisTemplate.opsForValue.set(String.valueOf(goodsId),<span class="hljs-keyword">null</span>,<span class="hljs-number">30</span>,TimeUnit.SECONDS);</span><br><span class="line">&#125;  </span><br><span class="line"><span class="hljs-keyword">return</span> goods;</span><br></pre></td></tr></table></figure>
+
+<p>解决方案：</p>
+<ul>
+<li><p>1、缓存数据的过期时间设置随机，防止同一时间大量数据过期现象发生；</p>
+</li>
+<li><p>2、如果缓存数据库是分布式部署，将热点数据均匀分布在不同的缓存数据库中；</p>
+</li>
+<li><p>3、设置热点数据永远不过期。</p>
+</li>
+</ul>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/images/avatar.png" alt="统一鱼蛋粉">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        统一鱼蛋粉
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Java Engineer
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>China,Guangzhou</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        3
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        12
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/kailalan" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/kailalan">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="QQ" href="https://facebook.com">
+                
+                <i class="fab fa-qq"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="WeChat" href="https://twitter.com">
+                
+                <i class="fab fa-weixin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
+                
+                <i class="fab fa-dribbble"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/GIT学习/">
+            <span class="level-start">
+                <span class="level-item">GIT学习</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Hexo/">
+            <span class="level-start">
+                <span class="level-item">Hexo</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/开发问题记录/">
+            <span class="level-start">
+                <span class="level-item">开发问题记录</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Redis-避免缓存穿透的利器之BloomFilter">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T06:15:15.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/" class="has-link-black-ter is-size-6">Redis-避免缓存穿透的利器之BloomFilter</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="什么是Redis缓存穿透、缓存雪崩和缓存击穿">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T03:42:21.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/" class="has-link-black-ter is-size-6">什么是Redis缓存穿透、缓存雪崩和缓存击穿</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/10/redis中主从、哨兵和集群三者的区别/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="redis中主从、哨兵和集群三者的区别">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-10T02:53:29.000Z">2020-01-10</time></div>
+                    <a href="/2020/01/10/redis中主从、哨兵和集群三者的区别/" class="has-link-black-ter is-size-6">redis中主从、哨兵和集群三者的区别</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/26/Java的基本类型/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Java的基本类型">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-26T15:13:50.000Z">2019-12-26</time></div>
+                    <a href="/2019/12/26/Java的基本类型/" class="has-link-black-ter is-size-6">Java的基本类型</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/07/Java位运算符示例代码/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Java位运算符示例代码">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-07T14:07:45.000Z">2019-12-07</time></div>
+                    <a href="/2019/12/07/Java位运算符示例代码/" class="has-link-black-ter is-size-6">Java位运算符示例代码</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/java-基础-位运算/">
+                        <span class="tag">-java -基础 -位运算</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/redis/">
+                        <span class="tag">-redis</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/springboot-redis-模板/">
+                        <span class="tag">-springboot -redis -模板</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/git/">
+                        <span class="tag">git</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/hexo/">
+                        <span class="tag">hexo</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/icarus/">
+                        <span class="tag">icarus</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/java/">
+                        <span class="tag">java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/live2d/">
+                        <span class="tag">live2d</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/maven/">
+                        <span class="tag">maven</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/springboot/">
+                        <span class="tag">springboot</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安装/">
+                        <span class="tag">安装</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/故障/">
+                        <span class="tag">故障</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/java-基础-位运算/" style="font-size: 10px;">-java -基础 -位运算</a> <a href="/tags/redis/" style="font-size: 15px;">-redis</a> <a href="/tags/springboot-redis-模板/" style="font-size: 10px;">-springboot -redis -模板</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/springboot/" style="font-size: 10px;">springboot</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="Kail的博客" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Kail Alan&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/kailalan">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+			<div>
+				<span id="timeDate">载入天数...</span>
+				<span id="times">载入时分秒...</span>
+				<script>
+					var now = new Date(); 
+					function createtime() { 
+						var grt= new Date("07/09/2019 00:00:00");//此处修改你的建站时间或者网站上线时间 
+						now.setTime(now.getTime()+250); 
+						days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+						hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+						if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+						mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+						seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+						snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+						document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+						document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+					} 
+					setInterval("createtime()",250);
+				</script>
+			</div>
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
