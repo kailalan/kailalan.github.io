@@ -7,19 +7,19 @@
 
 
 
-    <meta name="description" content="一、Maven依赖1、本文所采用的SpringBoot的版本如下123456&amp;lt;parent&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.">
-<meta name="keywords" content="-springboot -redis -模板">
+    <meta name="description" content="一、Maven依赖1、本文所采用的SpringBoot的版本如下123456&amp;lt;parent&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.0">
+<meta name="keywords" content="redis,springboot,模板">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot Redis工具类封装">
 <meta property="og:url" content="http://kailalan.github.com/2019/08/13/SpringBoot整合Redis/index.html">
 <meta property="og:site_name" content="Kail的博客">
-<meta property="og:description" content="一、Maven依赖1、本文所采用的SpringBoot的版本如下123456&amp;lt;parent&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.">
+<meta property="og:description" content="一、Maven依赖1、本文所采用的SpringBoot的版本如下123456&amp;lt;parent&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.0">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-01-13T09:59:05.802Z">
+<meta property="og:updated_time" content="2020-01-13T10:06:28.341Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot Redis工具类封装">
-<meta name="twitter:description" content="一、Maven依赖1、本文所采用的SpringBoot的版本如下123456&amp;lt;parent&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.">
+<meta name="twitter:description" content="一、Maven依赖1、本文所采用的SpringBoot的版本如下123456&amp;lt;parent&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.0">
 <meta name="twitter:image" content="http://kailalan.github.com/images/og_image.png">
 
 
@@ -163,9 +163,9 @@
             
         </h1>
         <div class="content">
-            <a id="more"></a>
-<h1 id="一、Maven依赖"><a href="#一、Maven依赖" class="headerlink" title="一、Maven依赖"></a>一、Maven依赖</h1><h2 id="1、本文所采用的SpringBoot的版本如下"><a href="#1、本文所采用的SpringBoot的版本如下" class="headerlink" title="1、本文所采用的SpringBoot的版本如下"></a>1、本文所采用的SpringBoot的版本如下</h2><figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.0.3.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
+            <h1 id="一、Maven依赖"><a href="#一、Maven依赖" class="headerlink" title="一、Maven依赖"></a>一、Maven依赖</h1><h2 id="1、本文所采用的SpringBoot的版本如下"><a href="#1、本文所采用的SpringBoot的版本如下" class="headerlink" title="1、本文所采用的SpringBoot的版本如下"></a>1、本文所采用的SpringBoot的版本如下</h2><figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.0.3.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
+<a id="more"></a>
 <h2 id="2、加入Redis相关依赖"><a href="#2、加入Redis相关依赖" class="headerlink" title="2、加入Redis相关依赖"></a>2、加入Redis相关依赖</h2><figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h1 id="二、application-properties中加入redis相关配置"><a href="#二、application-properties中加入redis相关配置" class="headerlink" title="二、application.properties中加入redis相关配置"></a>二、application.properties中加入redis相关配置</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># Redis数据库索引（默认为0）  </span><br><span class="line">spring.redis.database=0  </span><br><span class="line"># Redis服务器地址  </span><br><span class="line">spring.redis.host=192.168.0.24  </span><br><span class="line"># Redis服务器连接端口  </span><br><span class="line">spring.redis.port=6379  </span><br><span class="line"># Redis服务器连接密码（默认为空）  </span><br><span class="line">spring.redis.password=  </span><br><span class="line"># 连接池最大连接数（使用负值表示没有限制）  </span><br><span class="line">spring.redis.pool.max-active=200  </span><br><span class="line"># 连接池最大阻塞等待时间（使用负值表示没有限制）  </span><br><span class="line">spring.redis.pool.max-wait=-1  </span><br><span class="line"># 连接池中的最大空闲连接  </span><br><span class="line">spring.redis.pool.max-idle=10 </span><br><span class="line"># 连接池中的最小空闲连接  </span><br><span class="line">spring.redis.pool.min-idle=0  </span><br><span class="line"># 连接超时时间（毫秒）  </span><br><span class="line">spring.redis.timeout=1000</span><br></pre></td></tr></table></figure>
@@ -190,7 +190,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/springboot-redis-模板/">-springboot -redis -模板</a>
+                    <a class="has-link-grey -link" href="/tags/redis/">redis</a>, <a class="has-link-grey -link" href="/tags/springboot/">springboot</a>, <a class="has-link-grey -link" href="/tags/模板/">模板</a>
                 </div>
             </div>
         </div>
@@ -289,7 +289,7 @@
                         Tags
                     </p>
                     <p class="title has-text-weight-normal">
-                        12
+                        13
                     </p>
                 </div>
             </div>
@@ -571,27 +571,6 @@
             <div class="field is-grouped is-grouped-multiline">
                 
                 <div class="control">
-                    <a class="tags has-addons" href="/tags/java-基础-位运算/">
-                        <span class="tag">-java -基础 -位运算</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/redis/">
-                        <span class="tag">-redis</span>
-                        <span class="tag is-grey">2</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/springboot-redis-模板/">
-                        <span class="tag">-springboot -redis -模板</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
                     <a class="tags has-addons" href="/tags/git/">
                         <span class="tag">git</span>
                         <span class="tag is-grey">1</span>
@@ -615,7 +594,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/java/">
                         <span class="tag">java</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">3</span>
                     </a>
                 </div>
                 
@@ -634,8 +613,29 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/redis/">
+                        <span class="tag">redis</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/springboot/">
                         <span class="tag">springboot</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/位运算/">
+                        <span class="tag">位运算</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/基础/">
+                        <span class="tag">基础</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -654,6 +654,13 @@
                     </a>
                 </div>
                 
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/模板/">
+                        <span class="tag">模板</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -665,7 +672,7 @@
         <h3 class="menu-label">
             Tag Cloud
         </h3>
-        <a href="/tags/java-基础-位运算/" style="font-size: 10px;">-java -基础 -位运算</a> <a href="/tags/redis/" style="font-size: 15px;">-redis</a> <a href="/tags/springboot-redis-模板/" style="font-size: 10px;">-springboot -redis -模板</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/springboot/" style="font-size: 10px;">springboot</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a>
+        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 20px;">redis</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a> <a href="/tags/位运算/" style="font-size: 10px;">位运算</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a> <a href="/tags/模板/" style="font-size: 10px;">模板</a>
     </div>
 </div>
 
