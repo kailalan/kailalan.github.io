@@ -7,19 +7,19 @@
 
 
 
-    <meta name="description" content="一、简介Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。">
+    <meta name="description" content="在开发或者面试过程中，遇到过海量数据需要查重，缓存穿透怎么避免等等这样的问题有什么方案可以提供？这时就要想到我们的BloomFilter。">
 <meta name="keywords" content="算法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="BloomFilter算法">
 <meta property="og:url" content="http://kailalan.github.com/2020/01/13/BloomFilter算法/index.html">
 <meta property="og:site_name" content="Kail的博客">
-<meta property="og:description" content="一、简介Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。">
+<meta property="og:description" content="在开发或者面试过程中，遇到过海量数据需要查重，缓存穿透怎么避免等等这样的问题有什么方案可以提供？这时就要想到我们的BloomFilter。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-01-13T16:00:52.949Z">
+<meta property="og:updated_time" content="2020-01-14T12:55:39.769Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="BloomFilter算法">
-<meta name="twitter:description" content="一、简介Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。">
+<meta name="twitter:description" content="在开发或者面试过程中，遇到过海量数据需要查重，缓存穿透怎么避免等等这样的问题有什么方案可以提供？这时就要想到我们的BloomFilter。">
 <meta name="twitter:image" content="http://kailalan.github.com/images/og_image.png">
 
 
@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    24 minutes read (About 3583 words)
+                    40 minutes read (About 6014 words)
                 </span>
                 
                 
@@ -163,19 +163,29 @@
             
         </h1>
         <div class="content">
-            <h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。</p>
+            <p>在开发或者面试过程中，遇到过海量数据需要查重，缓存穿透怎么避免等等这样的问题有什么方案可以提供？这时就要想到我们的BloomFilter。</p>
 <a id="more"></a>
 
-<h2 id="二、应用场景"><a href="#二、应用场景" class="headerlink" title="二、应用场景"></a>二、应用场景</h2><p>在正式介绍Bloom Filter算法之前，先来看看什么时候需要用到Bloom Filter算法。</p>
+<h2 id="一、专业术语"><a href="#一、专业术语" class="headerlink" title="一、专业术语"></a>一、专业术语</h2><p>开始了解Bloom Filter算法，先介绍一下False Positive和False Negative的概念。<br>False Positive中文可以理解为“假阳性”，形象的一点说就是“误报”，后面将会说道Bloom Filter存在误报的情况，现实生活中也有误报，比如说去体检的时候，医生告诉你XXX检测是阳性，而实际上是阴性，也就是说误报了，是假阳性，杀毒软件误报也是同样的概念。<br>False Negative，中文可以理解为“假阴性”，形象的一点说是“漏报”。医生告诉你XXX检测为阴性，实际上你是阳性，你是有病的（Sorry, it’s just a joke），那就是漏报了。同样杀毒软件也存在漏报的情况。</p>
+<h2 id="二、简介"><a href="#二、简介" class="headerlink" title="二、简介"></a>二、简介</h2><p>Bloom Filter的中文翻译叫做布隆过滤器，是1970年由布隆提出的。它实际上是一个很长的二进制向量和一系列随机映射函数。布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。</p>
+<p>Bloom Filter是一种空间效率很高的随机数据结构，它利用位数组很简洁地表示一个集合，并能判断一个元素是否属于这个集合。Bloom Filter的这种高效是有一定代价的：在判断一个元素是否属于某个集合时，有可能会把不属于这个集合的元素误认为属于这个集合（false positive）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
+<h2 id="三、应用场景"><a href="#三、应用场景" class="headerlink" title="三、应用场景"></a>三、应用场景</h2><p>在正式介绍Bloom Filter算法之前，先来看看什么时候需要用到Bloom Filter算法。</p>
 <h3 id="1-HTTP缓存服务器、Web爬虫等"><a href="#1-HTTP缓存服务器、Web爬虫等" class="headerlink" title="1.HTTP缓存服务器、Web爬虫等"></a>1.HTTP缓存服务器、Web爬虫等</h3><p>主要工作是判断一条URL是否在现有的URL集合之中（可以认为这里的数据量级上亿）。<br>对于HTTP缓存服务器，当本地局域网中的PC发起一条HTTP请求时，缓存服务器会先查看一下这个URL是否已经存在于缓存之中，如果存在的话就没有必要去原始的服务器拉取数据了（为了简单起见，我们假设数据没有发生变化），这样既能节省流量，还能加快访问速度，以提高用户体验。<br>对于Web爬虫，要判断当前正在处理的网页是否已经处理过了，同样需要当前URL是否存在于已经处理过的URL列表之中。</p>
 <h3 id="2-垃圾邮件过滤"><a href="#2-垃圾邮件过滤" class="headerlink" title="2.垃圾邮件过滤"></a>2.垃圾邮件过滤</h3><p>假设邮件服务器通过发送方的邮件域或者IP地址对垃圾邮件进行过滤，那么就需要判断当前的邮件域或者IP地址是否处于黑名单之中。如果邮件服务器的通信邮件数量非常大（也可以认为数据量级上亿），那么也可以使用Bloom Filter算法。</p>
-<h2 id="三、专业术语"><a href="#三、专业术语" class="headerlink" title="三、专业术语"></a>三、专业术语</h2><p>这里有必要介绍一下False Positive和False Negative的概念（更形象的描述可以阅读第4条参考）。<br>False Positive中文可以理解为“假阳性”，形象的一点说就是“误报”，后面将会说道Bloom Filter存在误报的情况，现实生活中也有误报，比如说去体检的时候，医生告诉你XXX检测是阳性，而实际上是阴性，也就是说误报了，是假阳性，杀毒软件误报也是同样的概念。<br>False Negative，中文可以理解为“假阴性”，形象的一点说是“漏报”。医生告诉你XXX检测为阴性，实际上你是阳性，你是有病的（Sorry, it’s just a joke），那就是漏报了。同样杀毒软件也存在漏报的情况。</p>
-<h2 id="四、Bloom-Filter算法"><a href="#四、Bloom-Filter算法" class="headerlink" title="四、Bloom Filter算法"></a>四、Bloom Filter算法</h2><p>初始状态下，Bloom Filter是一个m位的位数组，且数组被0所填充。同时，我们需要定义k个不同的hash函数，每一个hash函数都随机的将每一个输入元素映射到位数组中的一个位上。那么对于一个确定的输入，我们会得到k个索引。</p>
-<p>插入元素：经过k个hash函数的映射，我们会得到k个索引，我们把位数组中这k个位置全部置1（不管其中的位之前是0还是1）</p>
-<p>查询元素：输入元素经过k个hash函数的映射会得到k个索引，如果位数组中这k个索引任意一处是0，那么就说明这个元素不在集合之中；如果元素处于集合之中，那么当插入元素的时候这k个位都是1。但如果这k个索引处的位都是1，被查询的元素就一定在集合之中吗？答案是不一定，也就是说出现了False Positive的情况（但Bloom Filter不会出现False Negative的情况）</p>
+<h2 id="四、Bloom-Filter原理"><a href="#四、Bloom-Filter原理" class="headerlink" title="四、Bloom Filter原理"></a>四、Bloom Filter原理</h2><h3 id="1-集合表示和元素查询"><a href="#1-集合表示和元素查询" class="headerlink" title="1.集合表示和元素查询"></a>1.集合表示和元素查询</h3><p><strong>初始状态</strong></p>
+<p>初始状态下，Bloom Filter是一个m位的位数组，且数组的每一位被0所填充。</p>
+<p><img src="/2020/01/13/BloomFilter算法/o_bf1.jpg" alt></p>
+<p><strong>插入元素</strong></p>
+<p>我们需要定义k个相互独立的哈希函数（<em>Hash Function*），分别将集合中的每个元素映射到</em>{1,…,m}<em>的范围中。对任意一个元素</em>x<em>，第</em>i<em>个哈希函数映射的位置</em>h<sub>i</sub>(x)<em>就会被置为</em>1<em>（</em>1<em>≤</em>i<em>≤</em>k<em>）。那么对于一个确定的输入，我们会得到k个索引。我们把位数组中这k个位置全部置1（不管其中的位之前是0还是1），注意，如果一个位置多次被置为</em>1<em>，那么只有第一次会起作用，后面几次将没有任何效果。在下图中，</em>k=3*，且有两个哈希函数选中同一个位置（从左边数第五位）。</p>
+<p><img src="/2020/01/13/BloomFilter算法/o_bf2.jpg" alt></p>
+<p><strong>查询元素</strong></p>
+<p>在判断<em>y</em>是否属于这个集合时，我们对<em>y</em>应用<em>k</em>次哈希函数，如果所有<em>h<sub>i</sub>(y)</em>的位置都是<em>1</em>（<em>1</em>≤<em>i</em>≤<em>k</em>），那么我们就认为<em>y</em>是集合中的元素，否则就认为<em>y</em>不是集合中的元素。下图中<em>y1</em>就不是集合中的元素。<em>y2</em>或者属于这个集合，或者刚好是一个<em>false positive</em>。</p>
+<p><img src="/2020/01/13/BloomFilter算法/o_bf3.jpg" alt></p>
+<p>输入元素经过k个hash函数的映射会得到k个索引，如果位数组中这k个索引任意一处是0，那么就说明这个元素不在集合之中；如果元素处于集合之中，那么当插入元素的时候这k个位都是1。但如果这k个索引处的位都是1，被查询的元素就一定在集合之中吗？答案是不一定，也就是说出现了False Positive的情况（但Bloom Filter不会出现False Negative的情况）</p>
+<p><strong>插入和查询对比</strong></p>
 <p><img src="/2020/01/13/BloomFilter算法/BloomFilter.png" alt="BloomFilter原理"></p>
 <p>在上图中，当插入x、y、z这三个元素之后，再来查询w，会发现w不在集合之中，而如果w经过三个hash函数计算得出的结果所得索引处的位全是1，那么Bloom Filter就会告诉你，w在集合之中，实际上这里是误报，w并不在集合之中。</p>
-<p><strong>False Positive Rate</strong><br>Bloom Filter的误报率到底有多大？下面在数学上进行一番推敲。假设HASH函数输出的索引值落在m位的数组上的每一位上都是等可能的。那么，对于一个给定的HASH函数，在进行某一个运算的时候，一个特定的位没有被设置为1的概率是<br><img src="/2020/01/13/BloomFilter算法/26164436_UWdS.png" alt></p>
+<h3 id="2-False-Positive-Rate"><a href="#2-False-Positive-Rate" class="headerlink" title="2.False Positive Rate"></a>2.False Positive Rate</h3><p>Bloom Filter的误报率到底有多大？下面在数学上进行一番推敲。假设HASH函数输出的索引值落在m位的数组上的每一位上都是等可能的。那么，对于一个给定的HASH函数，在进行某一个运算的时候，一个特定的位没有被设置为1的概率是<br><img src="/2020/01/13/BloomFilter算法/26164436_UWdS.png" alt></p>
 <p>那么，对于所有的k个HASH函数，都没有把这个位设置为1的概率是</p>
 <p><img src="/2020/01/13/BloomFilter算法/26164436_JKql.png" alt></p>
 <p>如果我们已经插入了n个元素，那么对于一个给定的位，这个位仍然是0的概率是</p>
@@ -186,17 +196,15 @@
 <p><img src="/2020/01/13/BloomFilter算法/26164437_RFO7.png" alt></p>
 <p>根据<a href="http://zh.wikipedia.org/wiki/E_(数学常数)" target="_blank" rel="noopener">常数e</a>的定义，可以近似的表示为：</p>
 <p><img src="/2020/01/13/BloomFilter算法/26164437_A0qN.png" alt></p>
-<p><strong>关于误报</strong><br>有时候误报对实际操作并不会带来太大的影响，比如对于HTTP缓存服务器，如果一条URL被误以为存在与缓存服务器之中，那么当取数据的时候自然会无法取到，最终还是要从原始服务器当中获取，之后再把记录插入缓存服务器，几乎没有什么不可以接受的。<br>对于安全软件，有着“另可错报，不可误报”的说法，如果你把一个正常软件误判为病毒，对使用者来说不会有什么影响（如果用户相信是病毒，那么就是删除这个文件罢了，如果用户执意要执行，那么后果也只能由用户来承担）；如果你把一个病毒漏判了，那么对用户造成的后果是不可设想的……更有甚者，误报在某种程度上能让部分用户觉得你很专业……</p>
-<p><strong>最优的哈希函数个数</strong></p>
-<p>既然Bloom Filter要靠多个哈希函数将集合映射到位数组中，那么应该选择几个哈希函数才能使元素查询时的错误率降到最低呢？这里有两个互斥的理由：如果哈希函数的个数多，那么在对一个不属于集合的元素进行查询时得到0的概率就大；但另一方面，如果哈希函数的个数少，那么位数组中的0就多。为了得到最优的哈希函数个数，我们需要根据上一小节中的错误率公式进行计算。</p>
+<h3 id="3-关于误报"><a href="#3-关于误报" class="headerlink" title="3.关于误报"></a>3.关于误报</h3><p>有时候误报对实际操作并不会带来太大的影响，比如对于HTTP缓存服务器，如果一条URL被误以为存在与缓存服务器之中，那么当取数据的时候自然会无法取到，最终还是要从原始服务器当中获取，之后再把记录插入缓存服务器，几乎没有什么不可以接受的。<br>对于安全软件，有着“另可错报，不可误报”的说法，如果你把一个正常软件误判为病毒，对使用者来说不会有什么影响（如果用户相信是病毒，那么就是删除这个文件罢了，如果用户执意要执行，那么后果也只能由用户来承担）；如果你把一个病毒漏判了，那么对用户造成的后果是不可设想的……更有甚者，误报在某种程度上能让部分用户觉得你很专业……</p>
+<h3 id="4-最优的哈希函数个数"><a href="#4-最优的哈希函数个数" class="headerlink" title="4.最优的哈希函数个数"></a>4.最优的哈希函数个数</h3><p>既然Bloom Filter要靠多个哈希函数将集合映射到位数组中，那么应该选择几个哈希函数才能使元素查询时的错误率降到最低呢？这里有两个互斥的理由：如果哈希函数的个数多，那么在对一个不属于集合的元素进行查询时得到0的概率就大；但另一方面，如果哈希函数的个数少，那么位数组中的0就多。为了得到最优的哈希函数个数，我们需要根据上一小节中的错误率公式进行计算。</p>
 <p>先用p和f进行计算。注意到f = exp(k ln(1 − e<sup>−kn/m)</sup>)，我们令g = k ln(1 − e<sup>−kn/m</sup>)，只要让g取到最小，f自然也取到最小。由于p = e<sup>-kn/m</sup>，我们可以将g写成</p>
 <p><img src="/2020/01/13/BloomFilter算法/29092948_OL69.jpg" alt></p>
 <p>根据对称性法则可以很容易看出当p = 1/2，也就是k = ln2· (m/n)时，g取得最小值。在这种情况下，最小错误率f等于(1/2)k ≈ (0.6185)m/n。另外，注意到p是位数组中某一位仍是0的概率，所以p = 1/2对应着位数组中0和1各一半。换句话说，要想保持错误率低，最好让位数组有一半还空着。</p>
 <p>需要强调的一点是，p = 1/2时错误率最小这个结果并不依赖于近似值p和f。同样对于f’ = exp(k ln(1 − (1 − 1/m)<sup>kn</sup>))，g’ = k ln(1 − (1 − 1/m)<sup>kn</sup>)，p’ = (1 − 1/m)<sup>kn</sup>，我们可以将g’写成</p>
 <p><img src="/2020/01/13/BloomFilter算法/29092949_MHJ2.jpg" alt></p>
 <p>同样根据对称性法则可以得到当p’ = 1/2时，g’取得最小值。</p>
-<p><strong>位数组的大小</strong></p>
-<p>下面我们来看看，在不超过一定错误率的情况下，Bloom Filter至少需要多少位才能表示全集中任意n个元素的集合。假设全集中共有u个元素，允许的最大错误率为є，下面我们来求位数组的位数m。</p>
+<h3 id="5-位数组的大小"><a href="#5-位数组的大小" class="headerlink" title="5.位数组的大小"></a>5.位数组的大小</h3><p>下面我们来看看，在不超过一定错误率的情况下，Bloom Filter至少需要多少位才能表示全集中任意n个元素的集合。假设全集中共有u个元素，允许的最大错误率为є，下面我们来求位数组的位数m。</p>
 <p> 假设X为全集中任取n个元素的集合，F(X)是表示X的位数组。那么对于集合X中任意一个元素x，在s = F(X)中查询x都能得到肯定的结果，即s能够接受x。显然，由于Bloom Filter引入了错误，s能够接受的不仅仅是X中的元素，它还能够є (u - n)个false positive。因此，对于一个确定的位数组来说，它能够接受总共n + є (u - n)个元素。在n + є (u - n)个元素中，s真正表示的只有其中n个，所以一个确定的位数组可以表示</p>
 <p><img src="/2020/01/13/BloomFilter算法/29092949_Fc37.jpg" alt></p>
 <p> 个集合。m位的位数组共有2m个不同的组合，进而可以推出，m位的位数组可以表示</p>
@@ -211,8 +219,9 @@
 <p>上一小节中我们曾算出当k = ln2· (m/n)时错误率f最小，这时f = (1/2)k = (1/2)mln2 / n。现在令f≤є，可以推出</p>
 <p><img src="/2020/01/13/BloomFilter算法/29092950_Obwx.jpg" alt></p>
 <p>这个结果比前面我们算得的下界n log2(1/є)大了log2 e ≈ 1.44倍。这说明在哈希函数的个数取到最优时，要让错误率不超过є，m至少需要取到最小值的1.44倍。</p>
-<p><strong>总结</strong></p>
-<p>在计算机科学中，我们常常会碰到时间换空间或者空间换时间的情况，即为了达到某一个方面的最优而牺牲另一个方面。Bloom Filter在时间空间这两个因素之外又引入了另一个因素：错误率。在使用Bloom Filter判断一个元素是否属于某个集合时，会有一定的错误率。也就是说，有可能把不属于这个集合的元素误认为属于这个集合（False Positive），但不会把属于这个集合的元素误认为不属于这个集合（False Negative）。在增加了错误率这个因素之后，Bloom Filter通过允许少量的错误来节省大量的存储空间。</p>
+<p>哈希函数个数k、位数组大小m、加入的字符串数量n的关系可以参考<a href="http://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html" target="_blank" rel="noopener">Bloom Filters - the math</a></p>
+<p><a href="BloomFilters-the_math.pdf">Bloom Filters - the math</a></p>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h3><p>在计算机科学中，我们常常会碰到时间换空间或者空间换时间的情况，即为了达到某一个方面的最优而牺牲另一个方面。Bloom Filter在时间空间这两个因素之外又引入了另一个因素：错误率。在使用Bloom Filter判断一个元素是否属于某个集合时，会有一定的错误率。也就是说，有可能把不属于这个集合的元素误认为属于这个集合（False Positive），但不会把属于这个集合的元素误认为不属于这个集合（False Negative）。在增加了错误率这个因素之后，Bloom Filter通过允许少量的错误来节省大量的存储空间。</p>
 <p>自从Burton Bloom在70年代提出Bloom Filter之后，Bloom Filter就被广泛用于拼写检查和数据库系统中。近一二十年，伴随着网络的普及和发展，Bloom Filter在网络领域获得了新生，各种Bloom Filter变种和新的应用不断出现。可以预见，随着网络应用的不断深入，新的变种和应用将会继续出现，Bloom Filter必将获得更大的发展。</p>
 <h2 id="五、Counting-Bloom-Filter"><a href="#五、Counting-Bloom-Filter" class="headerlink" title="五、Counting Bloom Filter"></a>五、Counting Bloom Filter</h2><p>从前面对Bloom Filter的介绍可以看出，标准的Bloom Filter是一种很简单的数据结构，它只支持插入和查找两种操作。在所要表达的集合是静态集合的时候，标准Bloom Filter可以很好地工作，但是如果要表达的集合经常变动，标准Bloom Filter的弊端就显现出来了，因为它不支持删除操作。</p>
 <p>Counting Bloom Filter的出现解决了这个问题，它将标准Bloom Filter位数组的每一位扩展为一个小的计数器（Counter），在插入元素时给对应的k（k为哈希函数个数）个Counter的值分别加1，删除元素时给对应的k个Counter的值分别减1。Counting Bloom Filter通过多占用几倍的存储空间的代价，给Bloom Filter增加了删除操作。下一个问题自然就是，到底要多占用几倍呢？</p>
@@ -228,6 +237,70 @@
 <p>如果每个Counter分配4位，那么当Counter的值达到16时就会溢出。这个概率为：</p>
 <p><img src="/2020/01/13/BloomFilter算法/29092951_XkSA.jpg" alt></p>
 <p>这个值足够小，因此对于大多数应用程序来说，4位就足够了。</p>
+<p><em>关于 CBF 中 Counter 大小的选择，主要参考这篇论文：《Summary Cache: A Scalable Wide-Area Web Cache Sharing Protocol》，在论文的第 6、7 两页专门对其做了一番阐述。</em></p>
+<p><a href="Summary_Cache.pdf">Summary Cache: A Scalable Wide-Area Web Cache Sharing Protocol</a></p>
+<h2 id="六、Bloom-Filter-实现"><a href="#六、Bloom-Filter-实现" class="headerlink" title="六、Bloom Filter 实现"></a>六、Bloom Filter 实现</h2><h3 id="1-Guava的布隆过滤器"><a href="#1-Guava的布隆过滤器" class="headerlink" title="1.Guava的布隆过滤器"></a>1.Guava的布隆过滤器</h3><p> Guava中，布隆过滤器的实现主要涉及到2个类， <code>BloomFilter</code>和 <code>BloomFilterStrategies</code>，首先来看一下 <code>BloomFilter</code>的成员变量。需要注意的是不同Guava版本的 <code>BloomFilter</code>实现不同。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/** guava实现的以CAS方式设置每个bit位的bit数组 */</span>  </span><br><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> LockFreeBitArray bits;  </span><br><span class="line"><span class="hljs-comment">/** hash函数的个数 */</span> </span><br><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> numHashFunctions;  </span><br><span class="line"><span class="hljs-comment">/** guava中将对象转换为byte的通道 */</span>  </span><br><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel;  </span><br><span class="line"><span class="hljs-comment">/** 将byte转换为n个bit的策略，也是bloomfilter hash映射的具体实现 */</span>  </span><br><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Strategy strategy;</span><br></pre></td></tr></table></figure>
+
+<p>4个成员变量:</p>
+<ul>
+<li><code>LockFreeBitArray</code>是定义在 <code>BloomFilterStrategies</code>中的内部类，封装了布隆过滤器底层bit数组的操作。</li>
+<li><code>numHashFunctions</code>表示哈希函数的个数。</li>
+<li><code>Funnel</code>，它和 <code>PrimitiveSink</code>配套使用，能将任意类型的对象转化成Java基本数据类型，默认用 <code>java.nio.ByteBuffer</code>实现，最终均转化为byte数组。</li>
+<li><code>Strategy</code>是定义在 <code>BloomFilter</code>类内部的接口，代码如下，主要有2个方法， <code>put</code>和 <code>mightContain</code>。</li>
+</ul>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Strategy</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">java</span>.<span class="hljs-title">io</span>.<span class="hljs-title">Serializable</span> </span>&#123;    </span><br><span class="line">    <span class="hljs-comment">/** 设置元素 */</span>    </span><br><span class="line">    &lt;T&gt; <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">put</span><span class="hljs-params">(T object, Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">int</span> numHashFunctions, BitArray bits)</span></span>;    </span><br><span class="line">    <span class="hljs-comment">/** 判断元素是否存在*/</span>    </span><br><span class="line">    &lt;T&gt; <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">mightContain</span><span class="hljs-params">(T object, Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">int</span> numHashFunctions, BitArray bits)</span></span>;    </span><br><span class="line">    .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建布隆过滤器， <code>BloomFilter</code>并没有公有的构造函数，只有一个私有构造函数，而对外它提供了5个重载的 <code>create</code>方法，在缺省情况下误判率设定为3%，采用 <code>BloomFilterStrategies.MURMUR128_MITZ_64</code>的实现。</p>
+<p> <code>BloomFilterStrategies.MURMUR128_MITZ_64</code>是 <code>Strategy</code>的两个实现之一，Guava以枚举的方式提供这两个实现，这也是《Effective Java》书中推荐的提供对象的方法之一。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">enum</span> BloomFilterStrategies implements BloomFilter.Strategy &#123;                      MURMUR128_MITZ_32() &#123;</span><br><span class="line">        <span class="hljs-comment">//....</span></span><br><span class="line">    &#125;    </span><br><span class="line"></span><br><span class="line">    MURMUR128_MITZ_64() &#123;</span><br><span class="line">        <span class="hljs-comment">//....</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>二者对应了32位哈希映射函数，和64位哈希映射函数，后者使用了murmur3 hash生成的所有128位，具有更大的空间，不过原理是相通的，我们选择相对简单的 <code>MURMUR128_MITZ_32</code>来分析。</p>
+<p> 先来看一下它的 <code>put</code>方法，它用两个hash函数来模拟多个hash函数的情况，这是布隆过滤器的一种优化。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> &lt;T&gt; <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">put</span><span class="hljs-params">(T object, Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">int</span> numHashFunctions, BitArray bits)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">long</span> bitSize = bits.bitSize();</span><br><span class="line">        <span class="hljs-comment">// 先利用murmur3 hash对输入的funnel计算得到128位的哈希值，funnel现将object转换为byte数组，    </span></span><br><span class="line">        <span class="hljs-comment">// 然后在使用哈希函数转换为long    </span></span><br><span class="line">        <span class="hljs-keyword">long</span> hash64 = Hashing.murmur3_128().hashObject(object, funnel).asLong();</span><br><span class="line">        <span class="hljs-comment">// 根据hash值的高低位算出hash1和hash2    </span></span><br><span class="line">        <span class="hljs-keyword">int</span> hash1 = (<span class="hljs-keyword">int</span>) hash64;</span><br><span class="line">        <span class="hljs-keyword">int</span> hash2 = (<span class="hljs-keyword">int</span>) (hash64 &gt;&gt;&gt; <span class="hljs-number">32</span>);</span><br><span class="line">        <span class="hljs-keyword">boolean</span> bitsChanged = <span class="hljs-keyword">false</span>;</span><br><span class="line">        <span class="hljs-comment">// 循环体内采用了2个函数模拟其他函数的思想,相当于每次累加hash2    </span></span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>; i &lt;= numHashFunctions; i++) &#123;</span><br><span class="line">            <span class="hljs-keyword">int</span> combinedHash = hash1 + (i * hash2);</span><br><span class="line">            <span class="hljs-comment">// 如果是负数就变为正数    </span></span><br><span class="line">            <span class="hljs-keyword">if</span> (combinedHash &lt; <span class="hljs-number">0</span>) &#123;</span><br><span class="line">                combinedHash = ~combinedHash;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="hljs-comment">// 通过基于bitSize取模的方式获取bit数组中的索引，然后调用set函数设置。    </span></span><br><span class="line">            bitsChanged |= bits.set(combinedHash % bitSize);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> bitsChanged;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>put</code>方法中，先是将索引位置上的二进制置为1，然后用 <code>bitsChanged</code>记录插入结果，如果返回true表明没有重复插入成功，而 <code>mightContain</code>方法则是将索引位置上的数值取出，并判断是否为0，只要其中出现一个0，那么立即判断为不存在。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> &lt;T&gt; <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">mightContain</span><span class="hljs-params">(T object, Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">int</span> numHashFunctions, BitArray bits)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">long</span> bitSize = bits.bitSize();</span><br><span class="line">    <span class="hljs-keyword">long</span> hash64 = Hashing.murmur3_128().hashObject(object, funnel).asLong();</span><br><span class="line">    <span class="hljs-keyword">int</span> hash1 = (<span class="hljs-keyword">int</span>) hash64;</span><br><span class="line">    <span class="hljs-keyword">int</span> hash2 = (<span class="hljs-keyword">int</span>) (hash64 &gt;&gt;&gt; <span class="hljs-number">32</span>);</span><br><span class="line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>; i &lt;= numHashFunctions; i++) &#123;</span><br><span class="line">        <span class="hljs-keyword">int</span> combinedHash = hash1 + (i * hash2);</span><br><span class="line">        <span class="hljs-comment">// Flip all the bits if it's negative (guaranteed positive number)  </span></span><br><span class="line">        <span class="hljs-keyword">if</span> (combinedHash &lt; <span class="hljs-number">0</span>) &#123;</span><br><span class="line">            combinedHash = ~combinedHash;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-comment">// 和put的区别就在这里，从set转换为get，来判断是否存在   </span></span><br><span class="line">        <span class="hljs-keyword">if</span> (!bits.get(combinedHash % bitSize)) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Guava</code>为了提供效率，自己实现了 <code>LockFreeBitArray</code>来提供bit数组的无锁设置和读取。我们只来看一下它的 <code>set</code>函数。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">set</span><span class="hljs-params">(<span class="hljs-keyword">long</span> bitIndex)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (get(bitIndex)) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">int</span> longIndex = (<span class="hljs-keyword">int</span>) (bitIndex &gt;&gt;&gt; LONG_ADDRESSABLE_BITS);</span><br><span class="line">    <span class="hljs-keyword">long</span> mask = <span class="hljs-number">1L</span> &lt;&lt; bitIndex;</span><br><span class="line">    <span class="hljs-comment">// only cares about low 6 bits of bitIndex</span></span><br><span class="line">    <span class="hljs-keyword">long</span> oldValue;</span><br><span class="line">    <span class="hljs-keyword">long</span> newValue;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 经典的CAS自旋重试机制    </span></span><br><span class="line">    <span class="hljs-keyword">do</span> &#123;</span><br><span class="line">        oldValue = data.get(longIndex);</span><br><span class="line">        newValue = oldValue | mask;</span><br><span class="line">        <span class="hljs-keyword">if</span> (oldValue == newValue) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="hljs-keyword">while</span> (!data.compareAndSet(longIndex, oldValue, newValue));</span><br><span class="line">    bitCount.increment();</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-maven引入guava包："><a href="#2-maven引入guava包：" class="headerlink" title="2.maven引入guava包："></a>2.maven引入guava包：</h3><figure class="highlight xml hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span></span><br><span class="line">           <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.google.guava<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span></span><br><span class="line">           <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>guava<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span></span><br><span class="line">           <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>23.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-代码逻辑"><a href="#3-代码逻辑" class="headerlink" title="3.代码逻辑"></a>3.代码逻辑</h3><p>测试分两步：</p>
+<p>1、往过滤器中放一百万个数，然后去验证这一百万个数是否能通过过滤器</p>
+<p>2、另外找一万个数，去检验漏网之鱼的数量</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * 测试布隆过滤器(可用于redis缓存穿透)</span></span><br><span class="line"><span class="hljs-comment"> * </span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@author</span> 敖丙</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TestBloomFilter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> total = <span class="hljs-number">1000000</span>;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> BloomFilter&lt;Integer&gt; bf = BloomFilter.create(Funnels.integerFunnel(), total);</span><br><span class="line">    <span class="hljs-comment">//private static BloomFilter&lt;Integer&gt; bf = BloomFilter.create(Funnels.integerFunnel(), total, 0.001);</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 初始化1000000条数据到过滤器中</span></span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; total; i++) &#123;</span><br><span class="line">            bf.put(i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 匹配已在过滤器中的值，是否有匹配不上的</span></span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; total; i++) &#123;</span><br><span class="line">            <span class="hljs-keyword">if</span> (!bf.mightContain(i)) &#123;</span><br><span class="line">                System.out.println(<span class="hljs-string">"有坏人逃脱了~~~"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 匹配不在过滤器中的10000个值，有多少匹配出来</span></span><br><span class="line">        <span class="hljs-keyword">int</span> count = <span class="hljs-number">0</span>;</span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = total; i &lt; total + <span class="hljs-number">10000</span>; i++) &#123;</span><br><span class="line">            <span class="hljs-keyword">if</span> (bf.mightContain(i)) &#123;</span><br><span class="line">                count++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="hljs-string">"误伤的数量："</span> + count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/2020/01/13/BloomFilter算法/TIM%E6%88%AA%E5%9B%BE20200114160354.png" alt></p>
+<p>运行结果显示，遍历这一百万个在过滤器中的数时，都能被识别出来，没有一个遗漏。遍历一万个不在过滤器中的数，误伤了320个，错误率是0.032左右。</p>
+<p>看下BloomFilter的源码：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-function">BloomFilter&lt;T&gt; <span class="hljs-title">create</span><span class="hljs-params">(Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">int</span> expectedInsertions)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> create(funnel, (<span class="hljs-keyword">long</span>) expectedInsertions);</span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-function">BloomFilter&lt;T&gt; <span class="hljs-title">create</span><span class="hljs-params">(Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">long</span> expectedInsertions)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> create(funnel, expectedInsertions, <span class="hljs-number">0.03</span>); <span class="hljs-comment">// FYI, for 3%, we always get 5 hash functions</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-function">BloomFilter&lt;T&gt; <span class="hljs-title">create</span><span class="hljs-params">(</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">      Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">long</span> expectedInsertions, <span class="hljs-keyword">double</span> fpp)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> create(funnel, expectedInsertions, fpp, BloomFilterStrategies.MURMUR128_MITZ_64);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-function">BloomFilter&lt;T&gt; <span class="hljs-title">create</span><span class="hljs-params">(</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">  Funnel&lt;? <span class="hljs-keyword">super</span> T&gt; funnel, <span class="hljs-keyword">long</span> expectedInsertions, <span class="hljs-keyword">double</span> fpp, Strategy strategy)</span> </span>&#123;</span><br><span class="line"> ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>BloomFilter一共四个create方法，不过最终都是走向第四个。看一下每个参数的含义：</p>
+<p>funnel：数据类型(一般是调用Funnels工具类)</p>
+<p>expectedInsertions：期望插入的值的个数</p>
+<p>fpp 错误率(默认值为0.03)</p>
+<p>strategy 哈希算法(我也不懂啥意思)Bloom Filter的应用</p>
+<p>在最后一个create方法中，设置一个断点：<br><img src="/2020/01/13/BloomFilter算法/TIM%E6%88%AA%E5%9B%BE20200114204401.png" alt><br><img src="/2020/01/13/BloomFilter算法/TIM%E6%88%AA%E5%9B%BE20200114204257.png" alt></p>
+<p>上面的numBits，表示存一百万个int类型数字，需要的位数为7298440，700多万位。理论上存一百万个数，一个int是4字节32位，需要4<em>8</em>1000000=3200万位。如果使用HashMap去存，按HashMap50%的存储效率，需要6400万位。可以看出BloomFilter的存储空间很小，只有HashMap的1/10左右</p>
+<p>上面的numHashFunctions，表示需要5个函数去存这些数字</p>
+<p>使用第三个create方法，我们设置下错误率：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> BloomFilter&lt;Integer&gt; bf = BloomFilter.create(Funnels.integerFunnel(), total, <span class="hljs-number">0.001</span>);</span><br></pre></td></tr></table></figure>
+
+<p>再运行看看：</p>
+<p><img src="/2020/01/13/BloomFilter算法/TIM%E6%88%AA%E5%9B%BE20200114204905.png" alt></p>
+<p>此时误伤的数量为19，错误率为0.0019左右。</p>
+<p><img src="/2020/01/13/BloomFilter算法/TIM%E6%88%AA%E5%9B%BE20200114204727.png" alt></p>
+<p>当错误率设为0.001时，所需要的位数为14377587，1400万位，需要10个函数。</p>
+<p>和上面对比可以看出，错误率越大，所需空间和时间越小，错误率越小，所需空间和时间约大。</p>
+<p>参考文章：</p>
+<p><a href="https://blog.csdn.net/jiaomeng/article/details/1495500" title="Bloom Filter概念和原理" target="_blank" rel="noopener">Bloom Filter概念和原理</a></p>
+<p><a href="https://www.cnblogs.com/chenying99/p/4375174.html" title="Bloom Filter 算法简介 (增加 Counting Bloom Filter 内容)" target="_blank" rel="noopener">Bloom Filter 算法简介 (增加 Counting Bloom Filter 内容)</a></p>
+<p><a href="https://juejin.im/post/5db69365518825645656c0de" title="Redis-避免缓存穿透的利器之BloomFilter" target="_blank" rel="noopener">Redis-避免缓存穿透的利器之BloomFilter</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1465288" title="Guava的布隆过滤器原来是这么回事儿" target="_blank" rel="noopener">Guava的布隆过滤器原来是这么回事儿</a></p>
+<p># </p>
 
         </div>
         
@@ -252,10 +325,17 @@
 <div class="card card-transparent">
     <div class="level post-navigation is-flex-wrap is-mobile">
         
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/01/14/GuavaRateLimiter限流原理解析/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">『转』Guava RateLimiter限流原理解析</span>
+            </a>
+        </div>
+        
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/">
-                <span class="level-item">Redis-避免缓存穿透的利器之BloomFilter</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/">
+                <span class="level-item">什么是Redis缓存穿透、缓存雪崩和缓存击穿</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -424,6 +504,25 @@
         
         <article class="media">
             
+            <a href="/2020/01/14/GuavaRateLimiter限流原理解析/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="『转』Guava RateLimiter限流原理解析">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-14T08:53:39.000Z">2020-01-14</time></div>
+                    <a href="/2020/01/14/GuavaRateLimiter限流原理解析/" class="has-link-black-ter is-size-6">『转』Guava RateLimiter限流原理解析</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2020/01/13/BloomFilter算法/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/images/thumbnail.svg" alt="BloomFilter算法">
@@ -434,25 +533,6 @@
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T15:42:46.000Z">2020-01-13</time></div>
                     <a href="/2020/01/13/BloomFilter算法/" class="has-link-black-ter is-size-6">BloomFilter算法</a>
-                    <p class="is-size-7 is-uppercase">
-                        
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Redis-避免缓存穿透的利器之BloomFilter">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T06:15:15.000Z">2020-01-13</time></div>
-                    <a href="/2020/01/13/Redis-避免缓存穿透的利器之BloomFilter/" class="has-link-black-ter is-size-6">Redis-避免缓存穿透的利器之BloomFilter</a>
                     <p class="is-size-7 is-uppercase">
                         
                     </p>
@@ -653,7 +733,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/redis/">
                         <span class="tag">redis</span>
-                        <span class="tag is-grey">3</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -717,7 +797,7 @@
         <h3 class="menu-label">
             Tag Cloud
         </h3>
-        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 20px;">redis</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a> <a href="/tags/位运算/" style="font-size: 10px;">位运算</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a> <a href="/tags/模板/" style="font-size: 10px;">模板</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a>
+        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 15px;">redis</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a> <a href="/tags/位运算/" style="font-size: 10px;">位运算</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a> <a href="/tags/模板/" style="font-size: 10px;">模板</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a>
     </div>
 </div>
 

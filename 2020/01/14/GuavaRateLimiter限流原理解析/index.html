@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>『转』Guava RateLimiter限流原理解析 - Kail的博客</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="转载自：超详细的Guava RateLimiter限流原理解析  限流是保护高并发系统的三把利器之一，另外两个是缓存和降级。限流在很多场景中用来限制并发和请求量，比如说秒杀抢购，保护自身系统和下游系统不被巨型流量冲垮等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="『转』Guava RateLimiter限流原理解析">
+<meta property="og:url" content="http://kailalan.github.com/2020/01/14/GuavaRateLimiter限流原理解析/index.html">
+<meta property="og:site_name" content="Kail的博客">
+<meta property="og:description" content="转载自：超详细的Guava RateLimiter限流原理解析  限流是保护高并发系统的三把利器之一，另外两个是缓存和降级。限流在很多场景中用来限制并发和请求量，比如说秒杀抢购，保护自身系统和下游系统不被巨型流量冲垮等。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://kailalan.github.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-14T09:16:12.859Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="『转』Guava RateLimiter限流原理解析">
+<meta name="twitter:description" content="转载自：超详细的Guava RateLimiter限流原理解析  限流是保护高并发系统的三把利器之一，另外两个是缓存和降级。限流在很多场景中用来限制并发和请求量，比如说秒杀抢购，保护自身系统和下游系统不被巨型流量冲垮等。">
+<meta name="twitter:image" content="http://kailalan.github.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="『转』Guava RateLimiter限流原理解析" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">Home</a>
+                
+                <a class="navbar-item" href="/archives">Archives</a>
+                
+                <a class="navbar-item" href="/categories">Categories</a>
+                
+                <a class="navbar-item" href="/tags">Tags</a>
+                
+                <a class="navbar-item" href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/kaialan">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-14T08:53:39.000Z">2020-01-14</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    26 minutes read (About 3855 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                『转』Guava RateLimiter限流原理解析
+            
+        </h1>
+        <div class="content">
+            <p> 转载自：<a href="https://mp.weixin.qq.com/s?__biz=Mzg2NjE5NDQyOA==&mid=2247483768&amp;idx=1&amp;sn=1df06849222072ac87d1410aef969125&source=41#wechat_redirect" title="超详细的Guava RateLimiter限流原理解析" target="_blank" rel="noopener">超详细的Guava RateLimiter限流原理解析</a></p>
+<p> 限流是保护高并发系统的三把利器之一，另外两个是缓存和降级。限流在很多场景中用来限制并发和请求量，比如说秒杀抢购，保护自身系统和下游系统不被巨型流量冲垮等。</p>
+<a id="more"></a>
+<p> 限流的目的是通过对并发访问/请求进行限速或者一个时间窗口内的的请求进行限速来保护系统，一旦达到限制速率则可以拒绝服务或进行流量整形。</p>
+<p> 常用的限流方式和场景有：限制总并发数（比如数据库连接池、线程池）、限制瞬时并发数（如nginx的limitconn模块，用来限制瞬时并发连接数，Java的Semaphore也可以实现）、限制时间窗口内的平均速率（如Guava的RateLimiter、nginx的limitreq模块，限制每秒的平均速率）；其他还有如限制远程接口调用速率、限制MQ的消费速率。另外还可以根据网络连接数、网络流量、CPU或内存负载等来限流。</p>
+<p> 比如说，我们需要限制方法被调用的并发数不能超过100（同一时间并发数），则我们可以用信号量 <code>Semaphore</code>实现。可如果我们要限制方法在一段时间内平均被调用次数不超过100，则需要使用 <code>RateLimiter</code>。</p>
+<h3 id="限流的基础算法"><a href="#限流的基础算法" class="headerlink" title="限流的基础算法"></a>限流的基础算法</h3><p> 我们先来讲解一下两个限流相关的基本算法：漏桶算法和令牌桶算法。</p>
+<p><img src="/2020/01/14/GuavaRateLimiter限流原理解析/1.png" alt></p>
+<p> 从上图中，我们可以看到，就像一个漏斗一样，进来的水量就好像访问流量一样，而出去的水量就像是我们的系统处理请求一样。当访问流量过大时，这个漏斗中就会积水，如果水太多了就会溢出。</p>
+<p> 漏桶算法的实现往往依赖于队列，请求到达如果队列未满则直接放入队列，然后有一个处理器按照固定频率从队列头取出请求进行处理。如果请求量大，则会导致队列满，那么新来的请求就会被抛弃。</p>
+<p><img src="/2020/01/14/GuavaRateLimiter限流原理解析/2.png" alt></p>
+<p>   令牌桶算法则是一个存放固定容量令牌的桶，按照固定速率往桶里添加令牌。桶中存放的令牌数有最大上限，超出之后就被丢弃或者拒绝。当流量或者网络请求到达时，每个请求都要获取一个令牌，如果能够获取到，则直接处理，并且令牌桶删除一个令牌。如果获取不同，该请求就要被限流，要么直接丢弃，要么在缓冲区等待。</p>
+<p><img src="/2020/01/14/GuavaRateLimiter限流原理解析/3.png" alt></p>
+<p>令牌桶和漏桶对比：</p>
+<ul>
+<li>令牌桶是按照固定速率往桶中添加令牌，请求是否被处理需要看桶中令牌是否足够，当令牌数减为零时则拒绝新的请求；漏桶则是按照常量固定速率流出请求，流入请求速率任意，当流入的请求数累积到漏桶容量时，则新流入的请求被拒绝；</li>
+<li>令牌桶限制的是平均流入速率，允许突发请求，只要有令牌就可以处理，支持一次拿3个令牌，4个令牌；漏桶限制的是常量流出速率，即流出速率是一个固定常量值，比如都是1的速率流出，而不能一次是1，下次又是2，从而平滑突发流入速率；</li>
+<li>令牌桶允许一定程度的突发，而漏桶主要目的是平滑流出速率；</li>
+</ul>
+<h3 id="Guava-RateLimiter"><a href="#Guava-RateLimiter" class="headerlink" title="Guava RateLimiter"></a>Guava RateLimiter</h3><p>  <code>Guava</code>是Java领域优秀的开源项目，它包含了Google在Java项目中使用一些核心库，包含集合(Collections)，缓存(Caching)，并发编程库(Concurrency)，常用注解(Common annotations)，String操作，I/O操作方面的众多非常实用的函数。 Guava的 <code>RateLimiter</code>提供了令牌桶算法实现：平滑突发限流(SmoothBursty)和平滑预热限流(SmoothWarmingUp)实现。</p>
+<p><img src="/2020/01/14/GuavaRateLimiter限流原理解析/4.png" alt></p>
+<p>  <code>RateLimiter</code>的类图如上所示，其中 <code>RateLimiter</code>是入口类，它提供了两套工厂方法来创建出两个子类。这很符合《Effective Java》中的用静态工厂方法代替构造函数的建议，毕竟该书的作者也正是Guava库的主要维护者，二者配合”食用”更佳。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// RateLimiter提供了两个工厂方法，最终会调用下面两个函数，生成RateLimiter的两个子类。</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> RateLimiter <span class="hljs-title">create</span><span class="hljs-params">(SleepingStopwatch stopwatch, <span class="hljs-keyword">double</span> permitsPerSecond)</span> </span>&#123;</span><br><span class="line">    RateLimiter rateLimiter = <span class="hljs-keyword">new</span> SmoothBursty(stopwatch, <span class="hljs-number">1.0</span> <span class="hljs-comment">/* maxBurstSeconds */</span>);</span><br><span class="line">    rateLimiter.setRate(permitsPerSecond);</span><br><span class="line">    <span class="hljs-keyword">return</span> rateLimiter;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> RateLimiter <span class="hljs-title">create</span><span class="hljs-params">(SleepingStopwatch stopwatch, <span class="hljs-keyword">double</span> permitsPerSecond, <span class="hljs-keyword">long</span> warmupPeriod, TimeUnit unit, <span class="hljs-keyword">double</span> coldFactor)</span> </span>&#123;</span><br><span class="line">    RateLimiter rateLimiter = <span class="hljs-keyword">new</span> SmoothWarmingUp(stopwatch, warmupPeriod, unit, coldFactor);</span><br><span class="line">    rateLimiter.setRate(permitsPerSecond);</span><br><span class="line">    <span class="hljs-keyword">return</span> rateLimiter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="平滑突发限流"><a href="#平滑突发限流" class="headerlink" title="平滑突发限流"></a>平滑突发限流</h4><p> 使用 <code>RateLimiter</code>的静态方法创建一个限流器，设置每秒放置的令牌数为5个。返回的RateLimiter对象可以保证1秒内不会给超过5个令牌，并且以固定速率进行放置，达到平滑输出的效果。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testSmoothBursty</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    RateLimiter r = RateLimiter.create(<span class="hljs-number">5</span>);</span><br><span class="line">    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>) &#123;</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire() + <span class="hljs-string">"s"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">        * output: 基本上都是0.2s执行一次，符合一秒发放5个令牌的设定。</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.0s</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.182014s</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.188464s</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.198072s</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.196048s</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.197538s</span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.196049s</span></span><br><span class="line"><span class="hljs-comment">        */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  <code>RateLimiter</code>使用令牌桶算法，会进行令牌的累积，如果获取令牌的频率比较低，则不会导致等待，直接获取令牌。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testSmoothBursty2</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    RateLimiter r = RateLimiter.create(<span class="hljs-number">2</span>);</span><br><span class="line">    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>) &#123;</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="hljs-number">2000</span>);</span><br><span class="line">        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"end"</span>);      </span><br><span class="line">        <span class="hljs-comment">/**       </span></span><br><span class="line"><span class="hljs-comment">            * output:       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * end       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.499796s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            */</span></span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>  <code>RateLimiter</code>由于会累积令牌，所以可以应对突发流量。在下面代码中，有一个请求会直接请求5个令牌，但是由于此时令牌桶中有累积的令牌，足以快速响应。  <code>RateLimiter</code>在没有足够令牌发放时，采用滞后处理的方式，也就是前一个请求获取令牌所需等待的时间由下一次请求来承受，也就是代替前一个请求进行等待。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testSmoothBursty3</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    RateLimiter r = RateLimiter.create(<span class="hljs-number">5</span>);</span><br><span class="line">    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>) &#123;</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 5 tokens: "</span> + r.acquire(<span class="hljs-number">5</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"end"</span>);      </span><br><span class="line">        <span class="hljs-comment">/**       </span></span><br><span class="line"><span class="hljs-comment">            * output:       </span></span><br><span class="line"><span class="hljs-comment">            * get 5 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.996766s 滞后效应，需要替前一个请求进行等待      </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.194007s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.196267s       </span></span><br><span class="line"><span class="hljs-comment">            * end       </span></span><br><span class="line"><span class="hljs-comment">            * get 5 tokens: 0.195756s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.995625s 滞后效应，需要替前一个请求进行等待       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.194603s       </span></span><br><span class="line"><span class="hljs-comment">            * get 1 tokens: 0.196866s       </span></span><br><span class="line"><span class="hljs-comment">            */</span></span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="平滑预热限流"><a href="#平滑预热限流" class="headerlink" title="平滑预热限流"></a>平滑预热限流</h4><p>  <code>RateLimiter</code>的 <code>SmoothWarmingUp</code>是带有预热期的平滑限流，它启动后会有一段预热期，逐步将分发频率提升到配置的速率。 比如下面代码中的例子，创建一个平均分发令牌速率为2，预热期为3分钟。由于设置了预热时间是3秒，令牌桶一开始并不会0.5秒发一个令牌，而是形成一个平滑线性下降的坡度，频率越来越高，在3秒钟之内达到原本设置的频率，以后就以固定的频率输出。这种功能适合系统刚启动需要一点时间来“热身”的场景。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testSmoothwarmingUp</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    RateLimiter r = RateLimiter.create(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, TimeUnit.SECONDS);</span><br><span class="line">    <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>) &#123;</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"get 1 tokens: "</span> + r.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">"s"</span>);</span><br><span class="line">        System.out.println(<span class="hljs-string">"end"</span>);      </span><br><span class="line">        <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">        * output:       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.0s       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 1.329289s       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.994375s       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.662888s  上边三次获取的时间相加正好为3秒       </span></span><br><span class="line"><span class="hljs-comment">        * end       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.49764s  正常速率0.5秒一个令牌       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.497828s       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.49449s       </span></span><br><span class="line"><span class="hljs-comment">        * get 1 tokens: 0.497522s       </span></span><br><span class="line"><span class="hljs-comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p> 看完了 <code>RateLimiter</code>的基本使用示例后，我们来学习一下它的实现原理。先了解一下几个比较重要的成员变量的含义。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//SmoothRateLimiter.java//当前存储令牌数double storedPermits;//最大存储令牌数double maxPermits;//添加令牌时间间隔double stableIntervalMicros;/** * 下一次请求可以获取令牌的起始时间 * 由于RateLimiter允许预消费，上次请求预消费令牌后 * 下次请求需要等待相应的时间到nextFreeTicketMicros时刻才可以获取令牌 */private long nextFreeTicketMicros = 0L;</span><br></pre></td></tr></table></figure>
+
+<h4 id="平滑突发限流-1"><a href="#平滑突发限流-1" class="headerlink" title="平滑突发限流"></a>平滑突发限流</h4><p>  <code>RateLimiter</code>的原理就是每次调用 <code>acquire</code>时用当前时间和 <code>nextFreeTicketMicros</code>进行比较，根据二者的间隔和添加单位令牌的时间间隔 <code>stableIntervalMicros</code>来刷新存储令牌数 <code>storedPermits</code>。然后acquire会进行休眠，直到 <code>nextFreeTicketMicros</code>。</p>
+<p>  <code>acquire</code>函数如下所示，它会调用 <code>reserve</code>函数计算获取目标令牌数所需等待的时间，然后使用 <code>SleepStopwatch</code>进行休眠，最后返回等待时间。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">acquire</span><span class="hljs-params">(<span class="hljs-keyword">int</span> permits)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 计算获取令牌所需等待的时间 </span></span><br><span class="line">    <span class="hljs-keyword">long</span> microsToWait = reserve(permits);    <span class="hljs-comment">// 进行线程sleep   </span></span><br><span class="line">    stopwatch.sleepMicrosUninterruptibly(microsToWait);</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">1.0</span> * microsToWait / SECONDS.toMicros(<span class="hljs-number">1L</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> <span class="hljs-title">reserve</span><span class="hljs-params">(<span class="hljs-keyword">int</span> permits)</span> </span>&#123;</span><br><span class="line">    checkPermits(permits);</span><br><span class="line">    <span class="hljs-comment">// 由于涉及并发操作，所以使用synchronized进行并发操作   </span></span><br><span class="line">    <span class="hljs-keyword">synchronized</span> (mutex()) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> reserveAndGetWaitLength(permits, stopwatch.readMicros());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> <span class="hljs-title">reserveAndGetWaitLength</span><span class="hljs-params">(<span class="hljs-keyword">int</span> permits, <span class="hljs-keyword">long</span> nowMicros)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 计算从当前时间开始，能够获取到目标数量令牌时的时间    </span></span><br><span class="line">    <span class="hljs-keyword">long</span> momentAvailable = reserveEarliestAvailable(permits, nowMicros);</span><br><span class="line">    <span class="hljs-comment">// 两个时间相减，获得需要等待的时间    </span></span><br><span class="line">    <span class="hljs-keyword">return</span> max(momentAvailable - nowMicros, <span class="hljs-number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  <code>reserveEarliestAvailable</code>是刷新令牌数和下次获取令牌时间 <code>nextFreeTicketMicros</code>的关键函数。它有三个步骤，一是调用 <code>resync</code>函数增加令牌数，二是计算预支付令牌所需额外等待的时间，三是更新下次获取令牌时间 <code>nextFreeTicketMicros</code>和存储令牌数 <code>storedPermits</code>。</p>
+<p> 这里涉及 <code>RateLimiter</code>的一个特性，也就是可以预先支付令牌，并且所需等待的时间在下次获取令牌时再实际执行。详细的代码逻辑的解释请看注释。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> <span class="hljs-title">reserveEarliestAvailable</span><span class="hljs-params">(<span class="hljs-keyword">int</span> requiredPermits, <span class="hljs-keyword">long</span> nowMicros)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 刷新令牌数，相当于每次acquire时在根据时间进行令牌的刷新</span></span><br><span class="line">    resync(nowMicros);</span><br><span class="line">    <span class="hljs-keyword">long</span> returnValue = nextFreeTicketMicros;</span><br><span class="line">    <span class="hljs-comment">// 获取当前已有的令牌数和需要获取的目标令牌数进行比较，计算出可以目前即可得到的令牌数。</span></span><br><span class="line">    <span class="hljs-keyword">double</span> storedPermitsToSpend = min(requiredPermits, <span class="hljs-keyword">this</span>.storedPermits);</span><br><span class="line">    <span class="hljs-comment">// freshPermits是需要预先支付的令牌，也就是目标令牌数减去目前即可得到的令牌数</span></span><br><span class="line">    <span class="hljs-keyword">double</span> freshPermits = requiredPermits - storedPermitsToSpend;</span><br><span class="line">    <span class="hljs-comment">// 因为会突然涌入大量请求，而现有令牌数又不够用，因此会预先支付一定的令牌数</span></span><br><span class="line">    <span class="hljs-comment">// waitMicros即是产生预先支付令牌的数量时间，则将下次要添加令牌的时间应该计算时间加上watiMicros</span></span><br><span class="line">    <span class="hljs-keyword">long</span> waitMicros = storedPermitsToWaitTime(<span class="hljs-keyword">this</span>.storedPermits, storedPermitsToSpend) + (<span class="hljs-keyword">long</span>) (freshPermits * stableIntervalMicros);</span><br><span class="line">    <span class="hljs-comment">// storedPermitsToWaitTime在SmoothWarmingUp和SmoothBuresty的实现不同，用于实现预热缓冲期</span></span><br><span class="line">    <span class="hljs-comment">// SmoothBuresty的storedPermitsToWaitTime直接返回0，所以watiMicros就是预先支付的令牌所需等待的时间</span></span><br><span class="line">    <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">        <span class="hljs-comment">// 更新nextFreeTicketMicros,本次预先支付的令牌所需等待的时间让下一次请求来实际等待。</span></span><br><span class="line">        <span class="hljs-keyword">this</span>.nextFreeTicketMicros = LongMath.checkedAdd(nextFreeTicketMicros, waitMicros);</span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (ArithmeticException e) &#123;</span><br><span class="line">        <span class="hljs-keyword">this</span>.nextFreeTicketMicros = Long.MAX_VALUE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-comment">// 更新令牌数，最低数量为0</span></span><br><span class="line">    <span class="hljs-keyword">this</span>.storedPermits -= storedPermitsToSpend;</span><br><span class="line">    <span class="hljs-comment">// 返回旧的nextFreeTicketMicros数值，无需为预支付的令牌多加等待时间。</span></span><br><span class="line">    <span class="hljs-keyword">return</span> returnValue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// SmoothBurest</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">long</span> <span class="hljs-title">storedPermitsToWaitTime</span><span class="hljs-params">(<span class="hljs-keyword">double</span> storedPermits, <span class="hljs-keyword">double</span> permitsToTake)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0L</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  <code>resync</code>函数用于增加存储令牌，核心逻辑就是 <code>(nowMicros-nextFreeTicketMicros)/stableIntervalMicros</code>。当前时间大于 <code>nextFreeTicketMicros</code>时进行刷新，否则直接返回。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">resync</span><span class="hljs-params">(<span class="hljs-keyword">long</span> nowMicros)</span> </span>&#123;    <span class="hljs-comment">// 当前时间晚于nextFreeTicketMicros，所以刷新令牌和nextFreeTicketMicros    if (nowMicros &gt; nextFreeTicketMicros) &#123;      // coolDownIntervalMicros函数获取每机秒生成一个令牌，SmoothWarmingUp和SmoothBuresty的实现不同      // SmoothBuresty的coolDownIntervalMicros直接返回stableIntervalMicros      // 当前时间减去要更新令牌的时间获取时间间隔，再除以添加令牌时间间隔获取这段时间内要添加的令牌数      storedPermits = min(maxPermits,          storedPermits            + (nowMicros - nextFreeTicketMicros) / coolDownIntervalMicros());      nextFreeTicketMicros = nowMicros;    &#125;    // 如果当前时间早于nextFreeTicketMicros，则获取令牌的线程要一直等待到nextFreeTicketMicros,该线程获取令牌所需    // 额外等待的时间由下一次获取的线程来代替等待。&#125;double coolDownIntervalMicros() &#123;    return stableIntervalMicros;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p> 下面我们举个例子，让大家更好的理解 <code>resync</code>和 <code>reserveEarliestAvailable</code>函数的逻辑。</p>
+<p> 比如 <code>RateLimiter</code>的 <code>stableIntervalMicros</code>为500，也就是1秒发两个令牌，storedPermits为0，nextFreeTicketMicros为155391849 <code>57</code>48。线程一acquire(2)，当前时间为155391849 <code>62</code>48，首先 <code>resync</code>函数计算，(1553918496248 - 1553918495748)/500 = 1，所以当前可获取令牌数为1，但是由于可以预支付，所以nextFreeTicketMicros= nextFreeTicketMicro + 1 * 500 = 155391849 <code>67</code>48。线程一无需等待。</p>
+<p> 紧接着，线程二也来acquire(2)，首先 <code>resync</code>函数发现当前时间早于 <code>nextFreeTicketMicros</code>，所以无法增加令牌数，所以需要预支付2个令牌，nextFreeTicketMicros= nextFreeTicketMicro + 2 * 500 = 155391849 <code>77</code>48。线程二需要等待155391849 <code>67</code>48时刻，也就是线程一获取时计算的nextFreeTicketMicros时刻。同样的，线程三获取令牌时也需要等待到线程二计算的nextFreeTicketMicros时刻。</p>
+<h4 id="平滑预热限流-1"><a href="#平滑预热限流-1" class="headerlink" title="平滑预热限流"></a>平滑预热限流</h4><p> 上述就是平滑突发限流RateLimiter的实现，下面我们来看一下加上预热缓冲期的实现原理。  <code>SmoothWarmingUp</code>实现预热缓冲的关键在于其分发令牌的速率会随时间和令牌数而改变，速率会先慢后快。表现形式如下图所示，令牌刷新的时间间隔由长逐渐变短。等存储令牌数从maxPermits到达thresholdPermits时，发放令牌的时间价格也由coldInterval降低到了正常的stableInterval。</p>
+<p><img src="/2020/01/14/GuavaRateLimiter限流原理解析/5.png" alt></p>
+<p>  <code>SmoothWarmingUp</code>的相关代码如下所示，相关的逻辑都写在注释中。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// SmoothWarmingUp，等待时间就是计算上图中梯形或者正方形的面积。</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">long</span> <span class="hljs-title">storedPermitsToWaitTime</span><span class="hljs-params">(<span class="hljs-keyword">double</span> storedPermits, <span class="hljs-keyword">double</span> permitsToTake)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * 当前permits超出阈值的部分</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">double</span> availablePermitsAboveThreshold = storedPermits - thresholdPermits;</span><br><span class="line">    <span class="hljs-keyword">long</span> micros = <span class="hljs-number">0</span>;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * 如果当前存储的令牌数超出thresholdPermits    </span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (availablePermitsAboveThreshold &gt; <span class="hljs-number">0.0</span>) &#123;</span><br><span class="line">        <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">         * 在阈值右侧并且需要被消耗的令牌数量  </span></span><br><span class="line"><span class="hljs-comment">         */</span></span><br><span class="line">        <span class="hljs-keyword">double</span> permitsAboveThresholdToTake = min(availablePermitsAboveThreshold, permitsToTake);</span><br><span class="line">        <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">         * 梯形的面积        </span></span><br><span class="line"><span class="hljs-comment">         *</span></span><br><span class="line"><span class="hljs-comment">         * 高 * (顶 * 底) / 2        </span></span><br><span class="line"><span class="hljs-comment">         *</span></span><br><span class="line"><span class="hljs-comment">         * 高是 permitsAboveThresholdToTake 也就是右侧需要消费的令牌数        </span></span><br><span class="line"><span class="hljs-comment">         * 底 较长 permitsToTime(availablePermitsAboveThreshold)        </span></span><br><span class="line"><span class="hljs-comment">         * 顶 较短 permitsToTime(availablePermitsAboveThreshold - permitsAboveThresholdToTake)        </span></span><br><span class="line"><span class="hljs-comment">         */</span></span><br><span class="line">        micros = (<span class="hljs-keyword">long</span>) (permitsAboveThresholdToTake * (permitsToTime(availablePermitsAboveThreshold) + permitsToTime(availablePermitsAboveThreshold - permitsAboveThresholdToTake)) / <span class="hljs-number">2.0</span>);</span><br><span class="line">        <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">         * 减去已经获取的在阈值右侧的令牌数        </span></span><br><span class="line"><span class="hljs-comment">         */</span></span><br><span class="line">        permitsToTake -= permitsAboveThresholdToTake;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * 平稳时期的面积，正好是长乘宽    </span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    micros += (stableIntervalMicros * permitsToTake);</span><br><span class="line">    <span class="hljs-keyword">return</span> micros;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">double</span> <span class="hljs-title">coolDownIntervalMicros</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * 每秒增加的令牌数为 warmup时间/maxPermits. 这样的话，在warmuptime时间内，就就增张的令牌数量    </span></span><br><span class="line"><span class="hljs-comment">     * 为 maxPermits    </span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">return</span> warmupPeriodMicros / maxPermits;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>  <code>RateLimiter</code>只能用于单机的限流，如果想要集群限流，则需要引入 <code>redis</code>或者阿里开源的 <code>sentinel</code>中间件，请大家继续关注。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/13/BloomFilter算法/">
+                <span class="level-item">BloomFilter算法</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/images/avatar.png" alt="统一鱼蛋粉">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        统一鱼蛋粉
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Java Engineer
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>China,Guangzhou</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        17
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        3
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        14
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/kailalan" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/kailalan">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="QQ" href="https://facebook.com">
+                
+                <i class="fab fa-qq"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="WeChat" href="https://twitter.com">
+                
+                <i class="fab fa-weixin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
+                
+                <i class="fab fa-dribbble"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="/">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/GIT学习/">
+            <span class="level-start">
+                <span class="level-item">GIT学习</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Hexo/">
+            <span class="level-start">
+                <span class="level-item">Hexo</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/开发问题记录/">
+            <span class="level-start">
+                <span class="level-item">开发问题记录</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/14/GuavaRateLimiter限流原理解析/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="『转』Guava RateLimiter限流原理解析">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-14T08:53:39.000Z">2020-01-14</time></div>
+                    <a href="/2020/01/14/GuavaRateLimiter限流原理解析/" class="has-link-black-ter is-size-6">『转』Guava RateLimiter限流原理解析</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/BloomFilter算法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="BloomFilter算法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T15:42:46.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/BloomFilter算法/" class="has-link-black-ter is-size-6">BloomFilter算法</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="什么是Redis缓存穿透、缓存雪崩和缓存击穿">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T03:42:21.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/什么是Redis缓存穿透、缓存雪崩和缓存击穿/" class="has-link-black-ter is-size-6">什么是Redis缓存穿透、缓存雪崩和缓存击穿</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/10/redis中主从、哨兵和集群三者的区别/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="redis中主从、哨兵和集群三者的区别">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-10T02:53:29.000Z">2020-01-10</time></div>
+                    <a href="/2020/01/10/redis中主从、哨兵和集群三者的区别/" class="has-link-black-ter is-size-6">redis中主从、哨兵和集群三者的区别</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/26/Java的基本类型/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Java的基本类型">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-26T15:13:50.000Z">2019-12-26</time></div>
+                    <a href="/2019/12/26/Java的基本类型/" class="has-link-black-ter is-size-6">Java的基本类型</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/git/">
+                        <span class="tag">git</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/hexo/">
+                        <span class="tag">hexo</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/icarus/">
+                        <span class="tag">icarus</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/java/">
+                        <span class="tag">java</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/live2d/">
+                        <span class="tag">live2d</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/maven/">
+                        <span class="tag">maven</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/redis/">
+                        <span class="tag">redis</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/springboot/">
+                        <span class="tag">springboot</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/位运算/">
+                        <span class="tag">位运算</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/基础/">
+                        <span class="tag">基础</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安装/">
+                        <span class="tag">安装</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/故障/">
+                        <span class="tag">故障</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/模板/">
+                        <span class="tag">模板</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/算法/">
+                        <span class="tag">算法</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/icarus/" style="font-size: 15px;">icarus</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 15px;">redis</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a> <a href="/tags/位运算/" style="font-size: 10px;">位运算</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/安装/" style="font-size: 10px;">安装</a> <a href="/tags/故障/" style="font-size: 20px;">故障</a> <a href="/tags/模板/" style="font-size: 10px;">模板</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="『转』Guava RateLimiter限流原理解析" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Kail Alan&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/kailalan">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+			<div>
+				<span id="timeDate">载入天数...</span>
+				<span id="times">载入时分秒...</span>
+				<script>
+					var now = new Date(); 
+					function createtime() { 
+						var grt= new Date("07/09/2019 00:00:00");//此处修改你的建站时间或者网站上线时间 
+						now.setTime(now.getTime()+250); 
+						days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+						hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+						if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+						mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+						seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+						snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+						document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+						document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+					} 
+					setInterval("createtime()",250);
+				</script>
+			</div>
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
